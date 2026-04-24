@@ -11,13 +11,19 @@ export function middleware(request: NextRequest) {
     }
 
     if (sessionCookie) {
-        const user = JSON.parse(sessionCookie.value)
-        if (pathname.startsWith('/dashboard/manager') && user.role !== 'MANAGER') {
-            return NextResponse.redirect(new URL('/dashboard/employee', request.url));
-        }
+        try {
+            const user = JSON.parse(sessionCookie.value)
+            if (pathname.startsWith('/dashboard/manager') && user.role !== 'MANAGER') {
+                return NextResponse.redirect(new URL('/dashboard/employee', request.url));
+            }
 
-        if (pathname.startsWith('/dashboard/employee') && user.role !== 'EMPLOYEE') {
-            return NextResponse.redirect(new URL('/dashboard/manager', request.url));
+            if (pathname.startsWith('/dashboard/employee') && user.role !== 'EMPLOYEE') {
+                return NextResponse.redirect(new URL('/dashboard/manager', request.url));
+            }
+        } catch {
+            const response = NextResponse.redirect(new URL('/login', request.url));
+            response.cookies.delete('auth_session');
+            return response;
         }
     }
     

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { TASKS, USERS } from "@/lib/db";
+import { addTask, getTasks, getUsers, updateTaskStatus } from "@/lib/db";
 
 
 async function getSessionCookie() {
@@ -15,14 +15,15 @@ export async function GET() {
     if (!sessionCookie) { return NextResponse.json({ error: "Unauthorized" }, { status: 401 }) }
 
     const user = JSON.parse(sessionCookie)
+    const tasks = await getTasks();
 
     if (user.role === "MANAGER") {
-        return NextResponse.json(TASKS)
+        return NextResponse.json(tasks)
     }
 
     if (user.role === "EMPLOYEE") {
-        const tasks = TASKS.filter((t) => t.assignedTo === user.id)
-        return NextResponse.json(tasks)
+        const employeeTasks = tasks.filter((t) => t.assignedTo === user.id)
+        return NextResponse.json(employeeTasks)
     }
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 }
@@ -40,7 +41,8 @@ export async function POST(request: Request) {
 
     if (!body || !(body.title) || !(body.assignedTo)) { return NextResponse.json({ error: "Bad Request" }, { status: 400 }) }
 
-    const employee = USERS.find((u) => u.id === body.assignedTo)
+    const users = await getUsers();
+    const employee = users.find((u) => u.id === body.assignedTo)
 
     if (employee) {
         const newTask = {
@@ -50,7 +52,7 @@ export async function POST(request: Request) {
             employeeName: employee.name,
             status: "pending"
         }
-        try { TASKS.push(newTask) }
+        try { await addTask(newTask) }
         catch (err) { return NextResponse.json({ error: "Internal Server Error" }, { status: 500 }) }
 
         return NextResponse.json(newTask)
@@ -71,14 +73,14 @@ export async function PATCH(request: Request) {
 
     if (!body || !(body.id) || !(body.status)) { return NextResponse.json({ error: "Bad Request" }, { status: 400 }) }
 
-    const task = TASKS.find((t) => t.id === body.id)
+    const tasks = await getTasks();
+    const task = tasks.find((entry) => entry.id === body.id)
 
     if (!task) { return NextResponse.json({ error: "Not Found" }, { status: 404 }); }
 
-    if (task?.assignedTo === user.id) {
-        task.status = body.status;
-
-        return NextResponse.json(task)
+    if (task.assignedTo === user.id) {
+        const updatedTask = await updateTaskStatus(body.id, body.status)
+        return NextResponse.json(updatedTask)
     }
 
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })

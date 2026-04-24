@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { USERS } from "@/lib/db";
+import { getEmployees } from "@/lib/db";
 
 async function getSessionCookie() {
     const cookieStore = await cookies();
@@ -16,7 +16,7 @@ export async function GET() {
 
 
     if (user.role === "MANAGER") {
-        const employees = USERS.filter((u) => u.role === "EMPLOYEE").map((u) => { return { id: u.id, email: u.email, name: u.name } })
+        const employees = (await getEmployees()).map((u) => { return { id: u.id, email: u.email, name: u.name } })
         return NextResponse.json(employees)
     }
 

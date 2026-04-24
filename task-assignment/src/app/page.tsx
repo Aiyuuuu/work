@@ -1,20 +1,26 @@
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-"use client"
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+export default async function Home() {
+  const sessionCookie = (await cookies()).get("auth_session")?.value;
 
-export default function Home() {
-  const router = useRouter();
+  if (!sessionCookie) {
+    redirect("/login");
+  }
 
-  useEffect(()=>{
-    const user = localStorage.getItem("user");
-    if(user){
-      router.push("/dashboard")
+  try {
+    const user = JSON.parse(sessionCookie);
+
+    if (user.role === "MANAGER") {
+      redirect("/dashboard/manager");
     }
-    else {
-      router.push("/login")
-    }
-  }, [router]);
 
-  return <p>Loading....</p>;
+    if (user.role === "EMPLOYEE") {
+      redirect("/dashboard/employee");
+    }
+  } catch {
+    redirect("/login");
+  }
+
+  redirect("/login");
 }

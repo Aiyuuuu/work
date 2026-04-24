@@ -35,21 +35,33 @@ export default function AssignTaskForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit} style={{ border: '1px solid black', padding: '1rem', marginBottom: '1rem' }}>
-            <h3>Assign a New Task</h3>
-            <input
-                placeholder="Task Title" value={title} required
-                onChange={e => setTitle(e.target.value)} style={{ marginRight: '10px' }}
-            />
-            <select value={assignedTo} onChange={e => setAssignedTo(e.target.value)} required style={{ marginRight: '10px' }}>
-                <option value="">Select Employee...</option>
-                {employees?.map((emp: {id: string, email: string, name:string}) => (
-                    <option key={emp.id} value={emp.id}>{emp.name}</option>
-                ))}
-            </select>
-            <button type="submit" disabled={isPending}>
-                {isPending ? 'Assigning...' : 'Assign'}
-            </button>
+        <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-slate-900">Assign a New Task</h3>
+            <div className="mt-4 space-y-4">
+                <input
+                    placeholder="Task Title" value={title} required
+                    onChange={e => setTitle(e.target.value)}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-400"
+                />
+                <select
+                    value={assignedTo}
+                    onChange={e => setAssignedTo(e.target.value)}
+                    required
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-400"
+                >
+                    <option value="">Select Employee...</option>
+                    {employees?.map((emp: {id: string, email: string, name:string}) => (
+                        <option key={emp.id} value={emp.id}>{emp.name}</option>
+                    ))}
+                </select>
+                <button
+                    type="submit"
+                    disabled={isPending}
+                    className="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                    {isPending ? 'Assigning...' : 'Assign'}
+                </button>
+            </div>
         </form>
     );
 }

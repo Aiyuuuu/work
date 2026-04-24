@@ -1,0 +1,55 @@
+{
+  "users": [
+    {
+      "id": "m1",
+      "email": "subhan@qbs.com",
+      "password": "123",
+      "role": "MANAGER",
+      "name": "Subhan"
+    },
+    {
+      "id": "e1",
+      "email": "ayan@qbs.com",
+      "password": "123",
+      "role": "EMPLOYEE",
+      "name": "Ayan"
+    },
+    {
+      "id": "e2",
+      "email": "anas@qbs.com",
+      "password": "123",
+      "role": "EMPLOYEE",
+      "name": "Anas"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Setup laptops",
+      "assignedTo": "e1",
+      "employeeName": "Ayan",
+      "status": "pending"
+    },
+    {
+      "id": 2,
+      "title": "Submit reports",
+      "assignedTo": "e2",
+      "employeeName": "Anas",
+      "status": "Pending"
+    },
+    {
+      "id": 1777034601466,
+      "title": "play cricket",
+      "assignedTo": "e1",
+      "employeeName": "Ayan",
+      "status": "pending"
+    },
+    {
+      "id": 1777034823629,
+      "title": "play hockey",
+      "assignedTo": "e2",
+      "employeeName": "Anas",
+      "status": "pending"
+    }
+  ]
+}
