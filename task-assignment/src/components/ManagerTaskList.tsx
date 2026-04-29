@@ -1,27 +1,7 @@
-"use client"
-import { useQuery } from "@tanstack/react-query"
+import { getTasks, type Task } from "@/lib/db";
 
-type Task = {
-    id: number;
-    title: string;
-    assignedTo: string;
-    employeeName: string;
-    status: string;
-};
-
-
-export default function ManagerTaskList() {
-    const { data: tasks, isLoading } = useQuery<Task[]>(
-        {
-            queryKey: ['tasks'],
-            queryFn: async () => {
-                const res = await fetch("/api/tasks")
-                return res.json()
-            }
-        })
-
-
-    if (isLoading) return <p>Loading all tasks...</p>;
+export default async function ManagerTaskList() {
+    const tasks = await getTasks();
 
     return (
         <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
