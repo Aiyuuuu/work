@@ -1,6 +1,6 @@
-import ManagerTaskList from "@/components/ManagerTaskList"
-import AssignTaskForm from "@/components/AssignTaskForm"
-import LogoutButton from "@/components/LogoutButton"
+import ManagerTaskList from "@/components/dashbaord/manager/ManagerTaskList"
+import AssignTaskForm from "@/components/dashbaord/manager/AssignTaskForm"
+import LogoutButton from "@/components/logoutButton/LogoutButton"
 import { cookies } from "next/headers"
 
 

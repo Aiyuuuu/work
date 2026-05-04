@@ -1,5 +1,5 @@
-import EmployeeTaskList from '@/components/EmployeeTaskList';
-import LogoutButton from '@/components/LogoutButton';
+import EmployeeTaskList from '@/components/dashbaord/employee/EmployeeTaskList';
+import LogoutButton from '@/components/logoutButton/LogoutButton';
 import { cookies } from 'next/headers';
 
 export default async function EmployeeDashboard() {
