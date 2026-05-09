@@ -1,0 +1,14 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	background: #f3f6f1;
+}
+
+button,
+input {
+	font-family: inherit;
+}

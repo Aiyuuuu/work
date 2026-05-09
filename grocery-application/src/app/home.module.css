@@ -1,0 +1,68 @@
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 34px;
+  margin: 0;
+}
+
+.subtitle {
+  color: #5c665c;
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tag {
+  align-self: flex-start;
+  background: #e6f2ea;
+  color: #1a7f4b;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.name {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  color: #4d5a4d;
+  font-size: 14px;
+}
+
+.link {
+  text-decoration: none;
+  color: #1a7f4b;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
