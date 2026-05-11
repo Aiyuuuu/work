@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import { AUTH_COOKIE_NAME, REFRESH_COOKIE_NAME, USER_OBJECT_COOKIE_NAME } from "@/utils/auth/auth";
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "",
+  baseURL: "",
   headers: {
     "Content-Type": "application/json",
     Authorization: "",

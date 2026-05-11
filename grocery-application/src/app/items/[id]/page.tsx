@@ -9,8 +9,9 @@ type ItemRow = RowDataPacket & GroceryItem;
 
 export const dynamic = "force-dynamic";
 
-export default async function ItemPage({ params }: { params: { id: string } }) {
-  const rows = await queryMySql<ItemRow>(`SELECT id, name, price, unit, description, tag FROM items WHERE id = ? LIMIT 1`, [params.id]);
+export default async function ItemPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const rows = await queryMySql<ItemRow>(`SELECT id, name, price, unit, description, tag FROM items WHERE id = ? LIMIT 1`, [id]);
   const row = rows.rows[0];
   const item: GroceryItem | undefined = row
     ? {

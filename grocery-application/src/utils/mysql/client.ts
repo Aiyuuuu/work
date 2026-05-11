@@ -1,5 +1,5 @@
 import mysql, { type Pool, type ResultSetHeader, type RowDataPacket } from "mysql2/promise";
-import type { ExecResult, MySqlConfig, QueryResult } from "@/interfaces/mysql";
+import type { ExecResult, MySqlConfig, QueryResult } from "@/types/grocery";
 
 type MySqlParam = string | number | boolean | Date | null;
 
