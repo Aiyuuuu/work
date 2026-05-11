@@ -1,0 +1,15 @@
+.close {
+  background: none;
+  border: none;
+  color: #2f3a2f;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  transition: color 0.2s ease;
+}
+
+.close:hover {
+  color: #1a1a1a;
+}

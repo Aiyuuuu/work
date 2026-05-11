@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { executeMySql } from "@/utils/mysql/client";
+import { executeMySql } from "@/utils/db/client";
 import { clearAuthCookies, parseCookies, REFRESH_COOKIE_NAME, verifyRefreshToken } from "@/utils/auth/auth";
 
 export async function POST(request: Request) {

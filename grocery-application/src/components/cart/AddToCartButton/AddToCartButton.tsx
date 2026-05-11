@@ -1,8 +1,8 @@
 "use client";
 
 import type { GroceryItem } from "@/types/grocery";
-import { useAddCartItemMutation } from "@/components/cart/cartQueries";
-import styles from "./cart.module.css";
+import { useAddCartItemMutation } from "@/lib/cartQueries";
+import styles from "./CartButton.module.css";
 
 export default function AddToCartButton({ item }: { item: GroceryItem }) {
   const addMutation = useAddCartItemMutation();

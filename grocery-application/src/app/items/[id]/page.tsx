@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
-import AddToCartButton from "@/components/cart/AddToCartButton";
+import AddToCartButton from "@/components/cart/AddToCartButton/AddToCartButton";
 import styles from "../item.module.css";
 import type { RowDataPacket } from "mysql2/promise";
-import { queryMySql } from "@/utils/mysql/client";
+import { queryMySql } from "@/utils/db/client";
 import type { GroceryItem } from "@/types/grocery";
 
 type ItemRow = RowDataPacket & GroceryItem;

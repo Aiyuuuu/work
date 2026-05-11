@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { RowDataPacket } from "mysql2/promise";
-import { executeMySql, queryMySql } from "@/utils/mysql/client";
+import { executeMySql, queryMySql } from "@/utils/db/client";
 import type { GroceryItem } from "@/types/grocery";
 import { getAuthUserFromRequest } from "@/utils/auth/auth";
 
@@ -183,14 +183,22 @@ export async function POST(request: Request) {
 			);
 		}
 
-		await executeMySql(
-			`
-				INSERT INTO cart_items (user_email, item_id, quantity)
-				VALUES (?, ?, 1)
-				ON DUPLICATE KEY UPDATE quantity = quantity + 1
-			`,
+		const existingItem = await queryMySql<RowDataPacket & { quantity: number }>(
+			`SELECT quantity FROM cart_items WHERE user_email = ? AND item_id = ? LIMIT 1`,
 			[authUser.email, body.itemId]
 		);
+
+		if (existingItem.rows.length > 0) {
+			await executeMySql(
+				`UPDATE cart_items SET quantity = quantity + 1 WHERE user_email = ? AND item_id = ?`,
+				[authUser.email, body.itemId]
+			);
+		} else {
+			await executeMySql(
+				`INSERT INTO cart_items (user_email, item_id, quantity) VALUES (?, ?, 1)`,
+				[authUser.email, body.itemId]
+			);
+		}
 
 		const cartItems = await loadUserCart(authUser.email);
 

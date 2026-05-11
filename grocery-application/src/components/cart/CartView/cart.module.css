@@ -1,12 +1,4 @@
-.primaryButton {
-  background: #1a7f4b;
-  color: #f7f9f5;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 16px;
-  font-weight: 600;
-  cursor: pointer;
-}
+
 
 .ghostButton {
   background: transparent;

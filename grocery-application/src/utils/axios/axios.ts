@@ -16,13 +16,13 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-// Minimal interface for user_object
-interface UserObject {
+// Minimal type for user_object
+type UserObject = {
   token: string;
   refreshToken: string;
   role?: "user" | "admin";
   [key: string]: unknown;
-}
+};
 
 // Helper function for managing user_object
 const getUserObject = async (): Promise<UserObject | null> => {

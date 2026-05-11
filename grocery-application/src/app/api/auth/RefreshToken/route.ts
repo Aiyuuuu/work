@@ -7,7 +7,7 @@ import {
   type UserRole,
   verifyRefreshToken,
 } from "@/utils/auth/auth";
-import { queryMySql, executeMySql } from "@/utils/mysql/client";
+import { queryMySql, executeMySql } from "@/utils/db/client";
 import type { RowDataPacket } from "mysql2/promise";
 import { NextResponse } from 'next/server';
 

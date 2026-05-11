@@ -10,20 +10,20 @@ export type GroceryItem = {
 export type CartItem = GroceryItem & { quantity: number };
 
 // MySQL Configuration and Result Types
-export interface MySqlConfig {
+export type MySqlConfig = {
   host: string;
   user: string;
   password: string;
   database: string;
   port: number;
   connectionLimit: number;
-}
+};
 
-export interface QueryResult<T> {
+export type QueryResult<T> = {
   rows: T[];
-}
+};
 
-export interface ExecResult {
+export type ExecResult = {
   affectedRows: number;
   insertId: number;
-}
+};

@@ -8,7 +8,7 @@ import {
   signAccessToken,
   signRefreshToken,
 } from "@/utils/auth/auth";
-import { queryMySql, executeMySql } from "@/utils/mysql/client";
+import { queryMySql, executeMySql } from "@/utils/db/client";
 
 type LoginRequestBody = {
   email?: string;
@@ -21,6 +21,23 @@ type UserRow = RowDataPacket & {
   password_hash: string;
   role: UserRole;
 };
+
+async function upsertRefreshToken(userEmail: string, token: string): Promise<void> {
+  const existing = await queryMySql<RowDataPacket & { token: string }>(
+    `SELECT token FROM refresh_tokens WHERE user_email = ? LIMIT 1`,
+    [userEmail]
+  );
+
+  if (existing.rows.length > 0) {
+    await executeMySql(`UPDATE refresh_tokens SET token = ?, created_at = CURRENT_TIMESTAMP WHERE user_email = ?`, [token, userEmail]);
+    return;
+  }
+
+  await executeMySql(
+    `INSERT INTO refresh_tokens (user_email, token, created_at) VALUES (?, ?, CURRENT_TIMESTAMP)`,
+    [userEmail, token]
+  );
+}
 
 function hashPassword(password: string): string {
   return createHash("sha256").update(password).digest("hex");
@@ -125,14 +142,7 @@ export async function POST(request: Request) {
       const accessToken = signAccessToken(email, "user");
       const refreshToken = signRefreshToken(email, "user");
 
-      await executeMySql(
-        `
-          INSERT INTO refresh_tokens (user_email, token, created_at)
-          VALUES (?, ?, CURRENT_TIMESTAMP)
-          ON DUPLICATE KEY UPDATE token = VALUES(token), created_at = VALUES(created_at)
-        `,
-        [email, refreshToken]
-      );
+      await upsertRefreshToken(email, refreshToken);
 
       const response = isJsonRequest
         ? NextResponse.json({
@@ -187,14 +197,7 @@ export async function POST(request: Request) {
     const accessToken = signAccessToken(email, role);
     const refreshToken = signRefreshToken(email, role);
 
-    await executeMySql(
-      `
-        INSERT INTO refresh_tokens (user_email, token, created_at)
-        VALUES (?, ?, CURRENT_TIMESTAMP)
-        ON DUPLICATE KEY UPDATE token = VALUES(token), created_at = VALUES(created_at)
-      `,
-      [email, refreshToken]
-    );
+    await upsertRefreshToken(email, refreshToken);
 
     const response = isJsonRequest
       ? NextResponse.json({

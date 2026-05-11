@@ -1,24 +1,17 @@
 "use client";
 
 import { useMemo } from "react";
-import { useCartQuery, useClearCartMutation, useRemoveCartItemMutation } from "@/components/cart/cartQueries";
+import { useCartQuery, useClearCartMutation, useRemoveCartItemMutation } from "@/lib/cartQueries";
 import styles from "./cart.module.css";
 
 export default function CartView() {
-  const { data: items = [], isLoading } = useCartQuery();
+  const { data: items } = useCartQuery();
   const removeMutation = useRemoveCartItemMutation();
   const clearMutation = useClearCartMutation();
   const isMutating = removeMutation.isPending || clearMutation.isPending;
 
   const total = useMemo(() => items.reduce((sum, item) => sum + item.price * item.quantity, 0), [items]);
 
-  if (isLoading) {
-    return <p className={styles.empty}>Loading cart...</p>;
-  }
-
-  if (items.length === 0) {
-    return <p className={styles.empty}>Your cart is empty.</p>;
-  }
 
   return (
     <div className={styles.cart}>

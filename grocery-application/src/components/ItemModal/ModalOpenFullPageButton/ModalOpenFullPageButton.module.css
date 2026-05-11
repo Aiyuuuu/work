@@ -1,0 +1,15 @@
+.viewPage {
+  background: none;
+  border: none;
+  color: #1a7f4b;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  transition: color 0.2s ease;
+}
+
+.viewPage:hover {
+  color: #0d5a35;
+}

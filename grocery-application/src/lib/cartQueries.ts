@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axios/axios";
 import type { CartItem } from "@/types/grocery";
 
@@ -36,9 +36,12 @@ async function clearServerCart(): Promise<void> {
 }
 
 export function useCartQuery() {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: CART_QUERY_KEY,
-    queryFn: fetchCartItems,
+    queryFn: async () => {
+      await new Promise((resolve) => setTimeout(resolve, 2000)); //simulated 2s delay
+      return fetchCartItems();
+    },
   });
 }
 
@@ -48,7 +51,7 @@ export function useAddCartItemMutation() {
   return useMutation({
     mutationFn: addItemToCart,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: CART_QUERY_KEY });
+      queryClient.removeQueries({ queryKey: CART_QUERY_KEY, exact: true });
     },
   });
 }
