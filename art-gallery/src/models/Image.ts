@@ -1,7 +1,7 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { Iimages } from "@/types/db/db";
+import { IImage } from "@/types/db/db";
 
-const imagesSchema = new Schema<Iimages>(
+const imageSchema = new Schema<IImage>(
     {
         externalId: { type: Number, required: true, unique: true },
         url: { type: String, required: true, unique: true },
@@ -13,4 +13,4 @@ const imagesSchema = new Schema<Iimages>(
     }
 )
 
-export const images: Model<Iimages> = mongoose.models.images || mongoose.model<Iimages>("images", imagesSchema);
+export const Image: Model<IImage> = mongoose.models.Image || mongoose.model<IImage>("Image", imageSchema);

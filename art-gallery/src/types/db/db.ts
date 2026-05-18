@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import {userRole} from "@/types/userRole"
 
-export interface Iusers {
+export interface IUser {
     _id: Types.ObjectId;
     username: string,
     email: string,
@@ -10,18 +10,18 @@ export interface Iusers {
     createdAt: Date,
 }
 
-export interface Itags {
+export interface ITag {
     _id: Types.ObjectId,
     name: string
 }
 
-export interface Iapis {
+export interface IApi {
     _id: Types.ObjectId,
     name: string,
     baseUrl: string
 }
 
-export interface Iimages {
+export interface IImage {
     _id: Types.ObjectId,
     externalId: number,
     url: string,
@@ -32,7 +32,7 @@ export interface Iimages {
     height: number
 }
 
-export interface IrefreshTokens {
+export interface IRefreshToken {
     _id: Types.ObjectId,
     userId: Types.ObjectId,
     tokenHash: string,
