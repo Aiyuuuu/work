@@ -1,6 +1,6 @@
 export const SALT_ROUNDS: number = 10;
 
-export const ACCESS_TOKEN_EXPIRY: string = "10m";
+export const ACCESS_TOKEN_EXPIRY: string = "30m";
 
 export const REFRESH_TOKEN_EXPIRY: string = "1d";
 

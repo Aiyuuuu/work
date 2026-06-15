@@ -4,19 +4,18 @@ import { verifyAccessToken } from "@/lib/auth/signOrVerifyTokens";
 import {
 	isAdminRoute,
 	isUnauthenticatedRoute,
+	isApiPath,
 } from "@/utils/routes/routes";
 
-function isApiPath(pathname: string): boolean {
-	return pathname.startsWith("/api");
-}
-
+//send unauthorized error
 function unauthorizedResponse(request: NextRequest): NextResponse {
 	if (isApiPath(request.nextUrl.pathname)) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
-	return NextResponse.redirect(new URL("/login", request.url));
+	return NextResponse.redirect(new URL("/auth", request.url));
 }
 
+//send forbidden error
 function forbiddenResponse(request: NextRequest): NextResponse {
 	if (isApiPath(request.nextUrl.pathname)) {
 		return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -24,20 +23,43 @@ function forbiddenResponse(request: NextRequest): NextResponse {
 	return NextResponse.redirect(new URL("/", request.url));
 }
 
+// Verify token and return payload or null
+async function verifyToken(request: NextRequest) {
+	const token = getAccessTokenFromRequest(request);
+	if (!token) return null;
+	return await verifyAccessToken(token);
+}
+
 // Enforce auth and RBAC for protected routes.
 export async function proxy(request: NextRequest): Promise<NextResponse> {
 	const { pathname } = request.nextUrl;
 
+	// Handle root path redirect based on token status
+	if (pathname === "/") {
+		const payload = await verifyToken(request);
+		
+		if (payload) {
+			return NextResponse.redirect(new URL("/home", request.url));
+		}
+		return NextResponse.redirect(new URL("/auth", request.url));
+	}
+
+	// Redirect authenticated users away from /auth
+	if (pathname === "/auth") {
+		const payload = await verifyToken(request);
+		if (payload) {
+			return NextResponse.redirect(new URL("/home", request.url)); //redirect to /home
+		}
+		return NextResponse.next();
+	}
+
+	//allow unautheticated routes
 	if (isUnauthenticatedRoute(pathname)) {
 		return NextResponse.next();
 	}
 
-	const token = getAccessTokenFromRequest(request);
-	if (!token) {
-		return unauthorizedResponse(request);
-	}
-
-	const payload = await verifyAccessToken(token);
+	//verify token for protected routes
+	const payload = await verifyToken(request);
 	if (!payload) {
 		return unauthorizedResponse(request);
 	}
@@ -50,5 +72,5 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 }
 
 export const config = {
-	matcher: ["/:path*"],
+	matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"], //match all paths EXCEPT these
 };

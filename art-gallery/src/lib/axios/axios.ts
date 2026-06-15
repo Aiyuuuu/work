@@ -36,10 +36,11 @@ apiClient.interceptors.response.use(
 
       try {
         await refreshAuthToken();
+        console.log("access token refreshed")
         return apiClient(originalRequest);
       } catch {
         if (typeof window !== "undefined") {
-          window.location.href = "/login";
+          window.location.href = "/auth";
         }
       }
     }

@@ -4,6 +4,7 @@ import { getAuthErrorResponse } from "@/lib/errors/authErrors";
 import { signupService } from "@/services/auth";
 import type { SignupRequest } from "@/types/auth/requests";
 
+// uses services/auth/signupService
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body = (await request.json()) as SignupRequest;

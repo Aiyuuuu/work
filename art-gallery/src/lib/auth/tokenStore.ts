@@ -9,7 +9,7 @@ export async function storeRefreshToken(
     tokenHash: string,
     expiresAt: Date,
 ): Promise<Types.ObjectId> {
-    await connectDb();
+    await connectDb(); 
     
     const document = await RefreshToken.create({
         userId, 
