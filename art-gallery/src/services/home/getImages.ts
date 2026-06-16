@@ -1,5 +1,7 @@
+// services/home/getImages.ts
 import { connectDb } from "@/lib/db/db";
 import { Image } from "@/lib/db/models";
+import { blurHashToDataURL } from "@/utils/blurhash/blurhash";
 
 const PAGE_SIZE = 50;
 
@@ -8,6 +10,7 @@ export type HomeImage = {
   externalId: number;
   url: string;
   hash: string;
+  blurDataUrl: string;
   baseModel: string;
   browsingLevel: number;
   width: number;
@@ -40,7 +43,6 @@ export async function getImages(
   const skip = (safeStartPage - 1) * PAGE_SIZE;
   const limit = safePages * PAGE_SIZE;
 
-  // Get the images and the total count at the same time
   const [rawImages, totalItems] = await Promise.all([
     Image.find({})
       // Stable sort so pagination does not jump around
@@ -57,13 +59,14 @@ export async function getImages(
     externalId: img.externalId,
     url: img.url,
     hash: img.hash,
+    blurDataUrl: img.hash ? blurHashToDataURL(img.hash) : "",
     baseModel: img.baseModel,
     browsingLevel: img.browsingLevel,
     width: img.width,
     height: img.height,
   }));
 
-  const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
   const pagesReturned = Math.ceil(items.length / PAGE_SIZE);
 
   // Find the next page number, if there is one

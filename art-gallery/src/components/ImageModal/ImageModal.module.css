@@ -1,0 +1,42 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.content {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+}
+
+.closeButton {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.imageWrap {
+  position: relative;
+  width: min(92vw, 1400px);
+  height: min(92vh, 900px);
+}
+
+.image {
+  object-fit: contain;
+}

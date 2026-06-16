@@ -5,6 +5,7 @@
   border-radius: 12px;
   overflow: hidden;
   background: #111;
+  cursor: pointer;
 }
 
 .link {

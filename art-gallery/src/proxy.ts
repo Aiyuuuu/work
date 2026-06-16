@@ -72,5 +72,5 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 }
 
 export const config = {
-	matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"], //match all paths EXCEPT these
+	matcher: ["/((?!_next/static|_next/image|_next/fonts|_next/fallback|favicon.ico|robots.txt|sitemap.xml).*)"], //match all paths EXCEPT these
 };

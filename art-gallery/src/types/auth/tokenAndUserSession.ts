@@ -42,3 +42,4 @@ export interface IRefreshServiceReturnPayload {
 export interface ILogoutServiceReturnPayload {
   success: boolean;
 }
+

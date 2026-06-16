@@ -1,9 +1,4 @@
-.container {
-  padding: 24px;
-}
+.imageGridContainer {
+    margin-top: 90px;
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
 }

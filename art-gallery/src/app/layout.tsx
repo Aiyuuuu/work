@@ -1,20 +1,22 @@
-import type { Metadata } from "next";
+// app/layout.tsx
+import type { ReactNode } from "react";
 import "./globals.css";
-
-
-export const metadata: Metadata = {
-  title: "Art Gallery",
-  description: "Art gallery",
-};
+import Header from "@/components/header/Header";
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+  modal,
+}: {
+  children: ReactNode;
+  modal: ReactNode;
+}) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Header />
+        {children}
+        {modal}
+      </body>
     </html>
   );
 }

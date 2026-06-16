@@ -1,0 +1,95 @@
+.header {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1a1b1e;
+  height: 80px;
+  box-sizing: border-box;
+  color: white;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  opacity: 0.9;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  padding-left: 24px;
+}
+
+.image {
+  object-fit: contain;
+}
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 20px;
+}
+
+.search {
+  width: 30vw;
+  margin-right: 4px;
+}
+
+.search :global(.MuiInputBase-root) {
+  background-color: #25262b;
+  color: #ffffff;
+  border-radius: 8px;
+}
+
+.search :global(.MuiInputBase-input) {
+  color: #ffffff;
+}
+
+.search :global(.MuiInputBase-input::placeholder) {
+  color: rgba(255, 255, 255, 0.5);
+  opacity: 1;
+}
+
+.search :global(.MuiInputLabel-root) {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.search :global(.MuiInputLabel-root.Mui-focused) {
+  color: #ffffff;
+}
+
+.search :global(.MuiOutlinedInput-notchedOutline) {
+  border-color: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  transition: border-color 0.2s ease, border-width 0.2s ease;
+}
+
+.search:hover :global(.MuiOutlinedInput-notchedOutline) {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.search :global(.Mui-focused .MuiOutlinedInput-notchedOutline) {
+  border-color: #ffffff !important;
+  border-width: 1px;
+}
+
+.searchButton {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px !important;
+  background-color: #25262b !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.searchButton:hover {
+  background-color: #2c2d31 !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.searchIcon {
+  font-size: 14px;
+}
