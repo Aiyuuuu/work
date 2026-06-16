@@ -9,6 +9,7 @@ import { User } from "@/lib/db/models";
 import type { LogoutRequest } from "@/types/auth/requests";
 
 
+
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const accessToken = getAccessTokenFromRequest(request);

@@ -22,7 +22,7 @@ export default function Header() {
       if (!valid) {
         router.replace("/auth");
       }
-    }, 2000);
+    }, 20000);
 
     return () => clearInterval(interval);
   }, [router]);
@@ -43,7 +43,11 @@ export default function Header() {
 
   async function handleLogout() {
     try {
-      await apiClient.post("/api/auth/logout");
+      const res = await apiClient.post("/api/auth/logout");
+      if(res.data.success){
+        router.push("/auth")
+      }
+
     } catch (error) {
       console.log(error);
     }
