@@ -1,21 +1,26 @@
+"use client";
+
 import styles from "./Header.module.css";
 import Image from "next/image";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import { FaSearch } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
+  const router = useRouter();
   return (
     <header className={styles.header}>
       <div className={styles.logo}>
         <Image
-          src="/civitlogo.png"
+          src="/civitlogo.png"  
           alt="Civit Logo"
           className={styles.image}
           width={120}
           height={40}
           priority
           unoptimized
+          onClick={() => { router.push("/home") }}
         />
       </div>
 
@@ -34,3 +39,6 @@ export default function Header() {
     </header>
   );
 }
+
+
+
