@@ -41,11 +41,11 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 		if (payload) {
 			return NextResponse.redirect(new URL("/home", request.url));
 		}
-		return NextResponse.redirect(new URL("/auth", request.url));
+		return NextResponse.redirect(new URL("/landing", request.url));
 	}
 
-	// Redirect authenticated users away from /auth
-	if (pathname === "/auth") {
+	// Redirect authenticated users away from /auth and /getStarted
+	if (pathname === "/auth" || pathname === "/landing") {
 		const payload = await verifyToken(request);
 		if (payload) {
 			return NextResponse.redirect(new URL("/home", request.url)); //redirect to /home

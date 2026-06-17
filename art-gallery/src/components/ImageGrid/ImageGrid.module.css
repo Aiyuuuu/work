@@ -1,4 +1,4 @@
-.container {
+/* .container {
   padding: 24px;
 }
 
@@ -6,4 +6,22 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
+} */
+
+
+
+.container {
+  padding: 24px;
+}
+
+.loading {
+  margin-top: 16px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+.sentinel {
+  width: 100%;
+  height: 1px;
 }

@@ -1,19 +1,17 @@
+
+
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Masonry from "@mui/lab/Masonry";
 import ImageCard from "../ImageCard/ImageCard";
 import styles from "./ImageGrid.module.css";
 import apiClient from "@/lib/axios/axios";
+import type { HomeImage } from "@/services/home/getImages";
 
-type ImageItem = {
-  _id: string;
-  url: string;
-  externalId: number;
-  blurDataUrl: string;
-};
-
+//AI response type
 type ImagesApiResponse = {
-  items: ImageItem[];
+  items: HomeImage[];
   startPage: number;
   pagesRequested: number;
   pagesReturned: number;
@@ -25,7 +23,7 @@ type ImagesApiResponse = {
 };
 
 type ImageGridProps = {
-  initialImages: ImageItem[];
+  initialImages: HomeImage[];
 };
 
 export default function ImageGrid({ initialImages }: ImageGridProps) {
@@ -45,7 +43,7 @@ export default function ImageGrid({ initialImages }: ImageGridProps) {
 
     try {
       const response = await apiClient.get<ImagesApiResponse>(
-        `/api/images?page=${page}`
+        `/api/images?page=${page}`,
       );
 
       const data = response.data;
@@ -57,11 +55,9 @@ export default function ImageGrid({ initialImages }: ImageGridProps) {
 
       setImages((prev) => {
         const existingIds = new Set(prev.map((img) => img._id));
-
         const uniqueNewImages = data.items.filter(
-          (img) => !existingIds.has(img._id)
+          (img) => !existingIds.has(img._id),
         );
-
         return [...prev, ...uniqueNewImages];
       });
 
@@ -87,7 +83,7 @@ export default function ImageGrid({ initialImages }: ImageGridProps) {
       },
       {
         rootMargin: "500px",
-      }
+      },
     );
 
     observer.observe(current);
@@ -97,7 +93,7 @@ export default function ImageGrid({ initialImages }: ImageGridProps) {
 
   return (
     <main className={styles.container}>
-      <div className={styles.grid}>
+      <Masonry columns={{ xs: 2, sm: 3, md: 4, lg: 5 }} spacing={4}>
         {images.map((img) => (
           <ImageCard
             key={img._id}
@@ -105,16 +101,16 @@ export default function ImageGrid({ initialImages }: ImageGridProps) {
             href={`/image/${img._id}`}
             imageUrl={img.url}
             blurDataUrl={img.blurDataUrl}
+            width={img.width}
+            height={img.height}
             alt={`Image ${img.externalId}`}
           />
         ))}
-      </div>
+      </Masonry>
 
       {loading && <div className={styles.loading}>Loading...</div>}
 
-      {hasMore && (
-        <div ref={loaderRef} style={{ width: "100%", height: "1px" }} />
-      )}
+      {hasMore && <div ref={loaderRef} className={styles.sentinel} />}
     </main>
   );
 }

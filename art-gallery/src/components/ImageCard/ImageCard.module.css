@@ -1,4 +1,4 @@
-.card {
+/* .card {
   position: relative;
   width: 100%;
   height: 420px;
@@ -16,6 +16,29 @@
 
 .image {
   object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+.card:hover .image {
+  transform: scale(1.03);
+} */
+
+
+.card {
+  width: 100%;
+}
+
+.link {
+  display: block;
+  width: 100%;
+  text-decoration: none;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
   transition: transform 0.2s ease;
 }
 

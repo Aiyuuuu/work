@@ -1,4 +1,4 @@
-export const UNAUTHENTICATED_ROUTES = ["/", "/auth", "/api/auth"];
+export const UNAUTHENTICATED_ROUTES = ["/", "/auth", "/landing", "/api/auth"];
 
 export const ADMIN_ROUTES = ["/admin", "/api/admin"]; 
 
