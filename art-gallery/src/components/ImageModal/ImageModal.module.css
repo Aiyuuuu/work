@@ -1,4 +1,4 @@
-.backdrop {
+/* .backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.8);
@@ -39,4 +39,316 @@
 
 .image {
   object-fit: contain;
+} */
+
+
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 12, 0.82);
+  backdrop-filter: blur(10px);
+  z-index: 5000;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
 }
+
+.modal {
+  position: relative;
+  width: min(96vw, 1600px);
+  max-height: 96vh;
+  border-radius: 24px;
+  background: rgba(18, 18, 22, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  color: #f4f4f5;
+  /* fix: give modal a concrete height so children can scroll within it */
+  display: flex;
+  flex-direction: column;
+}
+
+.closeButton {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.closeButton:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.95fr);
+  gap: 0;
+  /* fix: fill the modal and let panes scroll independently */
+  flex: 1;
+  min-height: 0;
+}
+
+.leftPane,
+.rightPane {
+  min-width: 0;
+  overflow: auto;
+}
+
+.leftPane {
+  padding: 28px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rightPane {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: rgba(255, 255, 255, 0.02);
+  /* fix: pad bottom so last card isn't flush against the edge when scrolled */
+  padding-bottom: 40px;
+}
+
+.heroCard {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.heroHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.kicker {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 6px;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(22px, 2vw, 34px);
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.badgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.badge {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.imageFrame {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px;
+}
+
+.imageFrame[data-orientation="landscape"] {
+  max-width: 100%;
+}
+
+.imageFrame[data-orientation="square"] {
+  max-width: min(100%, 920px);
+  margin-inline: auto;
+}
+
+.imageFrame[data-orientation="portrait"] {
+  max-width: min(100%, 760px);
+  margin-inline: auto;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  max-height: 74vh;
+  object-fit: contain;
+  display: block;
+  border-radius: 14px;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+
+.infoRow {
+  min-width: 0;
+  padding: 14px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.infoLabel {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.58);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.infoValue {
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.94);
+  word-break: break-word;
+  min-width: 0;
+}
+
+.monoBreak {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  word-break: break-all;
+}
+
+.sectionCard {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sectionTitle {
+  margin: 0 0 14px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.chipGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.statChip {
+  padding: 14px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.statKey {
+  display: block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.58);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.statValue {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.detailsStack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.preBlock {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: inherit;
+  line-height: 1.6;
+}
+
+.inlineList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.inlinePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+}
+
+.emptyState {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+}
+
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .leftPane {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
+@media (max-width: 720px) {
+  .backdrop {
+    padding: 10px;
+  }
+
+  .leftPane,
+  .rightPane {
+    padding: 16px;
+  }
+
+  .metaGrid,
+  .chipGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .heroHeader {
+    flex-direction: column;
+  }
+
+  .badgeRow {
+    justify-content: flex-start;
+  }
+
+  .image {
+    max-height: 60vh;
+  }
+}
+

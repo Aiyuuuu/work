@@ -21,6 +21,16 @@ export interface IApi {
     baseUrl: string
 }
 
+
+export interface IStats {
+    cryCount: number,
+    laughCount: number,
+    likeCount: number,
+    dislikeCount: number,
+    heartCount: number,
+    commentCount: number,
+}
+
 export interface IImage {
     _id: Types.ObjectId,
     externalId: number,
@@ -29,8 +39,14 @@ export interface IImage {
     baseModel: string,
     browsingLevel: number,
     width: number,
-    height: number
+    height: number,
+    type: string,
+    createdAt: Date | null,
+    username: string,
+    stats: IStats,
+    meta: object | null
 }
+
 
 export interface IRefreshToken {
     _id: Types.ObjectId,

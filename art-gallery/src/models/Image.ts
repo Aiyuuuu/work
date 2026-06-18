@@ -1,5 +1,6 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { IImage } from "@/types/db/db";
+import type { IImage } from "@/types/db/db";
+import type { IStats } from "@/types/db/db";
 
 const imageSchema = new Schema<IImage>(
     {
@@ -9,7 +10,12 @@ const imageSchema = new Schema<IImage>(
         baseModel: { type: String, required: true },
         browsingLevel: { type: Number, required: true },
         width: { type: Number, required: true },
-        height: { type: Number, required: true }
+        height: { type: Number, required: true },
+        type: {type: String, required: true},
+        createdAt: {type: Date || null, default: null},
+        username: {type: String, required: true},
+        stats: {type: Object || null},
+        meta: {type: Object || null}
     }
 )
 
