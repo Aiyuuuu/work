@@ -33,7 +33,11 @@ async function verifyToken(request: NextRequest) {
 // Enforce auth and RBAC for protected routes.
 export async function proxy(request: NextRequest): Promise<NextResponse> {
 	const { pathname } = request.nextUrl;
-
+	
+	 if (pathname.includes(".")) {
+    return NextResponse.next();
+  }
+  
 	// Handle root path redirect based on token status
 	if (pathname === "/") {
 		const payload = await verifyToken(request);
@@ -44,7 +48,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 		return NextResponse.redirect(new URL("/landing", request.url));
 	}
 
-	// Redirect authenticated users away from /auth and /getStarted
+	// Redirect authenticated users away from /auth and /landing
 	if (pathname === "/auth" || pathname === "/landing") {
 		const payload = await verifyToken(request);
 		if (payload) {

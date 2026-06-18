@@ -69,6 +69,7 @@
   text-transform: capitalize;
   letter-spacing: 0.3px;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  margin-left: 35%;
 }
 
 .button:hover:not(:disabled) {

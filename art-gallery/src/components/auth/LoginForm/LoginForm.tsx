@@ -48,7 +48,7 @@ export default function LoginForm({ onToggle }: LoginFormProps) {
             required
           />
         </div>
-
+<br />
         <div className={styles.field}>
           <label htmlFor="password">Password</label>
           <input
@@ -60,13 +60,14 @@ export default function LoginForm({ onToggle }: LoginFormProps) {
             required
           />
         </div>
+        <br />
 
         <button type="submit" className={styles.button} disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
 
-      <p className={styles.toggle}>
+      <p className={styles.toggle}> 
         Don&apos;t have an account?{" "}
         <button type="button" onClick={onToggle} className={styles.link}>
           Sign up

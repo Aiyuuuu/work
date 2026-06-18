@@ -92,7 +92,7 @@ export default function SignupForm({ onToggle }: SignupFormProps) {
             required
           />
         </div>
-
+<br />
         <button type="submit" className={styles.button} disabled={loading}>
           {loading ? "Creating account..." : "Sign Up"}
         </button>

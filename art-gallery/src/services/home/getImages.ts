@@ -1,9 +1,7 @@
-// services/home/getImages.ts
 import { connectDb } from "@/lib/db/db";
 import { Image } from "@/lib/db/models";
 import { blurHashToDataURL } from "@/utils/blurhash/blurhash";
-
-const PAGE_SIZE = 50;
+import { PAGE_SIZE } from "@/constants/imageConstants";
 
 export type HomeImage = {
   _id: string;

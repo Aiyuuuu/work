@@ -1,4 +1,3 @@
-// lib/blurhash.ts
 import { decode } from "blurhash";
 
 export function blurHashToDataURL(

@@ -45,7 +45,7 @@ export default function Header() {
     try {
       const res = await apiClient.post("/api/auth/logout");
       if(res.data.success){
-        router.push("/")
+        router.push("/auth")
       }
 
     } catch (error) {

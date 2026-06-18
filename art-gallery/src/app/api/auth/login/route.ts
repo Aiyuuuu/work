@@ -22,6 +22,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return response;
   } catch (error) {
     const { status, body } = getAuthErrorResponse(error);
-    return NextResponse.json(body, { status });
+    return NextResponse.json(body, {status: 403});
   }
 }
