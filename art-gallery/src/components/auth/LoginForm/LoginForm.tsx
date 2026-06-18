@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from "./LoginForm.module.css";
+import styles from "@/components/auth/LoginForm/LoginForm.module.css";
 import apiClient from "@/lib/axios/axios";
 
 export type LoginFormProps = {
@@ -16,13 +16,13 @@ export default function LoginForm({ onToggle }: LoginFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const response = await apiClient.post("/api/auth/login", { email, password });
+      await apiClient.post("/api/auth/login", { email, password });
       router.push("/home");
     } catch (err: any) {
       setError(err.response?.data?.error || "Login failed. Please try again.");
@@ -34,6 +34,7 @@ export default function LoginForm({ onToggle }: LoginFormProps) {
   return (
     <div className={styles.form}>
       <h2 className={styles.title}>Login</h2>
+
       {error && <p className={styles.error}>{error}</p>}
 
       <form onSubmit={handleSubmit}>
@@ -48,7 +49,7 @@ export default function LoginForm({ onToggle }: LoginFormProps) {
             required
           />
         </div>
-<br />
+
         <div className={styles.field}>
           <label htmlFor="password">Password</label>
           <input
@@ -60,14 +61,24 @@ export default function LoginForm({ onToggle }: LoginFormProps) {
             required
           />
         </div>
-        <br />
 
         <button type="submit" className={styles.button} disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
+          <video
+            className={styles.btnVideo}
+            src="/stars.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+          />
+          <span className={styles.buttonText}>
+            {loading ? "Logging in..." : "Login"}
+          </span>
         </button>
       </form>
 
-      <p className={styles.toggle}> 
+      <p className={styles.toggle}>
         Don&apos;t have an account?{" "}
         <button type="button" onClick={onToggle} className={styles.link}>
           Sign up

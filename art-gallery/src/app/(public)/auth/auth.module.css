@@ -4,7 +4,17 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #312c2c 0%, #8134ce 100%);
+  background: radial-gradient(ellipse at center, #191919 0%, #320b5a 100%);
   padding: 20px;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.mainHeading {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 0.5rem;
+  background: radial-gradient(ellipse at center, #ffffff, #ffffff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 5vh;
 }

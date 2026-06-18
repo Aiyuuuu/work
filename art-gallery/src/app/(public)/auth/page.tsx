@@ -10,6 +10,7 @@ export default function Auth() {
 
   return (
     <div className={styles.container}>
+      <h1 className={styles.mainHeading}>ART GALLERY</h1>
       {isSignup ? ( //conditional rendering
         <SignupForm onToggle={() => setIsSignup(false)} />
       ) : (

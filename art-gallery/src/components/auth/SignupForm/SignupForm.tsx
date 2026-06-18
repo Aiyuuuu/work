@@ -18,7 +18,7 @@ export default function SignupForm({ onToggle }: SignupFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
@@ -30,7 +30,7 @@ export default function SignupForm({ onToggle }: SignupFormProps) {
     setLoading(true);
 
     try {
-      const response = await apiClient.post("/api/auth/signup", { username, email, password });
+      await apiClient.post("/api/auth/signup", { username, email, password });
       router.push("/home");
     } catch (err: any) {
       setError(err.response?.data?.error || "Signup failed. Please try again.");
@@ -42,6 +42,7 @@ export default function SignupForm({ onToggle }: SignupFormProps) {
   return (
     <div className={styles.form}>
       <h2 className={styles.title}>Sign Up</h2>
+
       {error && <p className={styles.error}>{error}</p>}
 
       <form onSubmit={handleSubmit}>
@@ -92,9 +93,20 @@ export default function SignupForm({ onToggle }: SignupFormProps) {
             required
           />
         </div>
-<br />
+
         <button type="submit" className={styles.button} disabled={loading}>
-          {loading ? "Creating account..." : "Sign Up"}
+          <video
+            className={styles.btnVideo}
+            src="/stars.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+          />
+          <span className={styles.buttonText}>
+            {loading ? "Creating account..." : "Sign Up"}
+          </span>
         </button>
       </form>
 

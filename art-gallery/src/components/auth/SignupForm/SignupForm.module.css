@@ -1,20 +1,25 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
   width: 100%;
-  max-width: 420px;
-  background: white;
+  max-width: 25%;
+  background: rgb(255, 255, 255);
   padding: 40px;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  justify-content: center;
+  z-index: 1;
+}
+
+.form form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .title {
-  margin: 0 0 12px 0;
+  margin: 0 0 20px 0;
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 200;
   text-align: center;
   color: #1a1a1a;
   letter-spacing: -0.5px;
@@ -28,17 +33,15 @@
 
 .field label {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 200;
   color: #333;
-  text-transform: capitalize;
 }
 
 .field input {
   padding: 14px 16px;
   border: 1.5px solid #e0e0e0;
-  border-radius: 8px;
+  border-radius: 3px;
   font-size: 15px;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   transition: all 0.2s ease;
   background-color: #f9f9f9;
 }
@@ -52,29 +55,31 @@
   outline: none;
   border-color: #667eea;
   background-color: white;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
 .button {
+  position: relative;
   padding: 14px 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1b2f88 0%, #404040 100%);
   color: white;
   border: none;
-  border-radius: 8px;
+  width: 50%;
+  border-radius: 5px;
   font-size: 16px;
   font-weight: 600;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: capitalize;
+  transition: all 0.2s ease-out;
   letter-spacing: 0.3px;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-  margin-left: 35%;
+  align-self: center;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .button:hover:not(:disabled) {
-  transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  width: 60%;
 }
 
 .button:active:not(:disabled) {
@@ -84,6 +89,26 @@
 .button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.btnVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.button:hover:not(:disabled) .btnVideo {
+  opacity: 1;
+}
+
+.buttonText {
+  position: relative;
+  z-index: 1;
 }
 
 .error {
@@ -101,7 +126,7 @@
   text-align: center;
   font-size: 14px;
   color: #666;
-  margin: 8px 0 0 0;
+  margin: 20px 0 0 0;
 }
 
 .link {
