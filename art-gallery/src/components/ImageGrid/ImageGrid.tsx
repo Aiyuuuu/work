@@ -7,23 +7,13 @@ import Masonry from "@mui/lab/Masonry";
 import ImageCard from "../ImageCard/ImageCard";
 import styles from "./ImageGrid.module.css";
 import apiClient from "@/lib/axios/axios";
-import type { HomeImage } from "@/services/home/getImages";
+import type { HomeImagesResult, SingleImage } from "@/types/services/home";
 
-//AI response type
-type ImagesApiResponse = {
-  items: HomeImage[];
-  startPage: number;
-  pagesRequested: number;
-  pagesReturned: number;
-  pageSize: number;
-  totalItems: number;
-  totalPages: number;
-  hasMore: boolean;
-  nextStartPage: number | null;
-};
+
+
 
 type ImageGridProps = {
-  initialImages: HomeImage[];
+  initialImages: SingleImage[];
 };
 
 export default function ImageGrid({ initialImages }: ImageGridProps) {
@@ -42,7 +32,7 @@ export default function ImageGrid({ initialImages }: ImageGridProps) {
     setLoading(true);
 
     try {
-      const response = await apiClient.get<ImagesApiResponse>(
+      const response = await apiClient.get<HomeImagesResult>(
         `/api/images?page=${page}`,
       );
 
