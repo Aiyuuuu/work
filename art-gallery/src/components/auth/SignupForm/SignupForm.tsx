@@ -97,12 +97,13 @@ export default function SignupForm({ onToggle }: SignupFormProps) {
         <button type="submit" className={styles.button} disabled={loading}>
           <video
             className={styles.btnVideo}
-            src="/stars.mp4"
+            src="/stars_240p.mp4"
             autoPlay
             loop
             muted
             playsInline
             preload="auto"
+            onCanPlay={(e)=>{e.currentTarget.playbackRate= 5}}
           />
           <span className={styles.buttonText}>
             {loading ? "Creating account..." : "Sign Up"}

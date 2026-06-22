@@ -1,4 +1,5 @@
-import { IStats } from "@/types/db/db";
+import { IStats, IMeta } from "@/types/db/db";
+
 
 export type SingleImage = {
   _id: string;
@@ -14,7 +15,7 @@ export type SingleImage = {
   createdAt: Date | null;
   username: string;
   stats: IStats;
-  meta: object | null;
+  meta: IMeta | null;
 };
 
 

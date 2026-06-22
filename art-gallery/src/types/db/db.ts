@@ -31,6 +31,13 @@ export interface IStats {
     commentCount: number,
 }
 
+export interface IMeta {
+    prompt?: string,
+    seed?: number,
+    sampler?: string,
+    steps?: number,
+}
+
 export interface IImage {
     _id: Types.ObjectId,
     externalId: number,
@@ -44,7 +51,7 @@ export interface IImage {
     createdAt: Date | null,
     username: string,
     stats: IStats,
-    meta: object | null
+    meta: IMeta | null
 }
 
 
