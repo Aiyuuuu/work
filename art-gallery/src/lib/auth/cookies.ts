@@ -15,7 +15,7 @@ import {
 import type { UserObject } from "@/types/auth/tokenAndUserSession";
 
 
-export function setAuthCookies(
+export function setAuthCookiesOnResponse(
     response: NextResponse,
     userObject: UserObject,
     accessToken: string,
@@ -54,7 +54,7 @@ export function setAuthCookies(
 
 
 
-export function clearAuthCookies(response: NextResponse): void {
+export function clearAuthCookiesOnResponse(response: NextResponse): void {
     response.cookies.set({
         name: AUTH_COOKIE_NAME,
         value: "",
@@ -89,12 +89,19 @@ export function getAccessTokenFromRequest(
   return request.cookies.get(AUTH_COOKIE_NAME)?.value ?? null;
 }
 
+export function isAccessTokenPresentOnRequest( request: NextRequest ): boolean {
+    return request.cookies.has(AUTH_COOKIE_NAME)
+}
+
 export function getRefreshTokenFromRequest(
     request: NextRequest
 ): string | null {
     return request.cookies.get(REFRESH_COOKIE_NAME)?.value ?? null;
 }
 
+export function isRefreshTokenPresentOnRequest( request: NextRequest ): boolean {
+    return request.cookies.has(REFRESH_COOKIE_NAME)
+}
 
 export function getUserObjectFromRequest( request: NextRequest ): UserObject | null {
     const userObjStr = request.cookies.get(USER_OBJECT_COOKIE_NAME)?.value;
@@ -106,4 +113,8 @@ export function getUserObjectFromRequest( request: NextRequest ): UserObject | n
     } catch {
         return null;
     }
+}
+
+export function isUserObjectPresentOnRequest( request: NextRequest ): boolean {
+    return request.cookies.has(USER_OBJECT_COOKIE_NAME)
 }

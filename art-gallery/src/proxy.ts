@@ -1,80 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAccessTokenFromRequest } from "@/lib/auth/cookies";
-import { verifyAccessToken } from "@/lib/auth/signOrVerifyTokens";
 import {
-	isAdminRoute,
-	isUnauthenticatedRoute,
-	isApiPath,
+  isAccessTokenPresentOnRequest,
+  isUserObjectPresentOnRequest,
+} from "@/lib/auth/cookies";
+import {
+  isAdminRoute,
+  isProtectedRoute,
+  isAuthRoute,
 } from "@/utils/routes/routes";
+import { PROTECTED_ROUTES, PUBLIC_ROUTES } from "./constants/routeConstants";
 
-//send unauthorized error
-function unauthorizedResponse(request: NextRequest): NextResponse {
-	if (isApiPath(request.nextUrl.pathname)) {
-		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-	}
-	return NextResponse.redirect(new URL("/auth", request.url));
-}
+export default function proxy(request: NextRequest): NextResponse {
+  const pathname = request.nextUrl.pathname; //extract the pathname from the request
+  const url = request.nextUrl.clone(); //clone the url object from the nextUrl
+  const isSessionPresent =
+    isAccessTokenPresentOnRequest(request) &&
+    isUserObjectPresentOnRequest(request);
 
-//send forbidden error
-function forbiddenResponse(request: NextRequest): NextResponse {
-	if (isApiPath(request.nextUrl.pathname)) {
-		return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-	}
-	return NextResponse.redirect(new URL("/", request.url));
-}
-
-// Verify token and return payload or null
-async function verifyToken(request: NextRequest) {
-	const token = getAccessTokenFromRequest(request);
-	if (!token) return null;
-	return await verifyAccessToken(token);
-}
-
-// Enforce auth and RBAC for protected routes.
-export async function proxy(request: NextRequest): Promise<NextResponse> {
-	const { pathname } = request.nextUrl;
-	
-	 if (pathname.includes(".")) {
-    return NextResponse.next();
+  // Handle root path redirect based on access token and user object presence
+  if (pathname === "/") {
+    if (isSessionPresent) {
+      url.pathname = PROTECTED_ROUTES[0];
+      return NextResponse.redirect(url); //redirect to firt entry of protected routes (usually /home)
+    }
+    url.pathname = PUBLIC_ROUTES[0];
+    return NextResponse.redirect(url); //redirect to first entry of public routes (usually /landing)
   }
-  
-	// Handle root path redirect based on token status
-	if (pathname === "/") {
-		const payload = await verifyToken(request);
-		
-		if (payload) {
-			return NextResponse.redirect(new URL("/home", request.url));
-		}
-		return NextResponse.redirect(new URL("/landing", request.url));
-	}
 
-	// Redirect authenticated users away from /auth and /landing
-	if (pathname === "/auth" || pathname === "/landing") {
-		const payload = await verifyToken(request);
-		if (payload) {
-			return NextResponse.redirect(new URL("/home", request.url)); //redirect to /home
-		}
-		return NextResponse.next();
-	}
+  //redirect away from auth routes if access token and user object present
+  if (isAuthRoute(pathname) && isSessionPresent) {
+    url.pathname = PROTECTED_ROUTES[0];
+    return NextResponse.redirect(url); //redirect to firt entry of protected routes (usually /home)
+  }
 
-	//allow unautheticated routes
-	if (isUnauthenticatedRoute(pathname)) {
-		return NextResponse.next();
-	}
+  //redirect away from admin and protected routes if access token or user object absent
+  if (
+    (isProtectedRoute(pathname) || isAdminRoute(pathname)) &&
+    !isSessionPresent
+  ) {
+    url.pathname = PUBLIC_ROUTES[0];
+    return NextResponse.redirect(url);
+  }
 
-	//verify token for protected routes
-	const payload = await verifyToken(request);
-	if (!payload) {
-		return unauthorizedResponse(request);
-	}
-
-	if (isAdminRoute(pathname) && payload.role !== "admin") {
-		return forbiddenResponse(request);
-	}
-
-	return NextResponse.next();
+  return NextResponse.next();
 }
 
 export const config = {
-	matcher: ["/((?!_next/static|_next/image|_next/fonts|_next/fallback|favicon.ico|robots.txt|sitemap.xml).*)"], //match all paths EXCEPT these
+  matcher: [
+    "/((?!api|_next/data|_next/static|_next/image|_next/fonts|_next/fallback|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)",
+  ], //match all paths EXCEPT these
 };

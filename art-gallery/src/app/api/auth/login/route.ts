@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { setAuthCookies } from "@/lib/auth/cookies";
+import { setAuthCookiesOnResponse } from "@/lib/auth/cookies";
 import { getAuthErrorResponse } from "@/lib/errors/authErrors";
 import { loginService } from "@/services/auth";
 import type { LoginRequest } from "@/types/auth/requests";
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     //if login successful
     const response = NextResponse.json({ user: result.user });
-    setAuthCookies(
+    setAuthCookiesOnResponse(
       response,
       { email: result.user.email, role: result.user.role },
       result.accessToken,

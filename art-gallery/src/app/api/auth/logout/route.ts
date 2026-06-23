@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Types } from "mongoose";
-import { clearAuthCookies, getAccessTokenFromRequest } from "@/lib/auth/cookies";
+import { clearAuthCookiesOnResponse, getAccessTokenFromRequest } from "@/lib/auth/cookies";
 import { AuthError, getAuthErrorResponse } from "@/lib/errors/authErrors";
 import { verifyAccessToken } from "@/lib/auth/signOrVerifyTokens";
 import { logoutService } from "@/services/auth";
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     await logoutService(user._id, refreshTokenId); //use logout service
 
     const response = NextResponse.json({ success: true }); // Create a success response
-    clearAuthCookies(response); // Remove auth cookies from the browser
+    clearAuthCookiesOnResponse(response); // Remove auth cookies from the browser
     return response;
   } catch (error) {
     // Convert the error into a proper API response

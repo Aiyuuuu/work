@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   getRefreshTokenFromRequest,
   getUserObjectFromRequest,
-  setAuthCookies,
+  setAuthCookiesOnResponse,
 } from "@/lib/auth/cookies";
 import { AuthError, getAuthErrorResponse } from "@/lib/errors/authErrors";
 import { refreshService } from "@/services/auth";
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const response = NextResponse.json({ accessToken: result.accessToken }); // Send new access token back to client
 
      // Update cookies with new access + refresh tokens
-    setAuthCookies(
+    setAuthCookiesOnResponse(
       response,
       { email: userObject.email, role: userObject.role },
       result.accessToken,
