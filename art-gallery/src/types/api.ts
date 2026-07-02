@@ -1,16 +1,10 @@
-import { UserRole } from "@/types/db";
+import { UserObject } from "./lib";
 
 
 export interface IAuthServiceReturnPayload {
-  user: {
-    username: string,
-    email: string,
-    role: UserRole,
-    createdAt: Date,
-  },
+  user: UserObject
   accessToken: string,
   refreshToken: string,
-  refreshTokenId: Types.ObjectId
 }
 
 export type ILoginServiceReturnPayload = IAuthServiceReturnPayload;
