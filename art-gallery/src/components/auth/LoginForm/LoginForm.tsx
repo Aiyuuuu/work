@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
+
+import apiClient from "@/lib/client/axios/apiClient";
+
 import styles from "@/components/auth/LoginForm/LoginForm.module.css";
-import apiClient from "@/lib/axios/axios";
 
 export type LoginFormProps = {
   onToggle: () => void;
@@ -11,25 +14,40 @@ export type LoginFormProps = {
 
 export default function LoginForm({ onToggle }: LoginFormProps) {
   const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     setError("");
     setLoading(true);
 
     try {
-      await apiClient.post("/api/auth/login", { email, password });
-      router.push("/home");
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Login failed. Please try again.");
+      await apiClient.post("/api/auth/login", {
+        email: email.trim(),
+        password,
+      });
+
+      router.replace("/home");
+      router.refresh();
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        setError(
+          err.response?.data?.error?.message ??
+            "Login failed. Please try again.",
+        );
+      } else {
+        setError("Login failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div className={styles.form}>
@@ -40,29 +58,37 @@ export default function LoginForm({ onToggle }: LoginFormProps) {
       <form onSubmit={handleSubmit}>
         <div className={styles.field}>
           <label htmlFor="email">Email</label>
+
           <input
             id="email"
             type="email"
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
             required
           />
         </div>
 
         <div className={styles.field}>
           <label htmlFor="password">Password</label>
+
           <input
             id="password"
             type="password"
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
             required
           />
         </div>
 
-        <button type="submit" className={styles.button} disabled={loading}>
+        <button
+          type="submit"
+          className={styles.button}
+          disabled={loading}
+        >
           <video
             className={styles.btnVideo}
             src="/stars_240p.mp4"
@@ -75,6 +101,7 @@ export default function LoginForm({ onToggle }: LoginFormProps) {
               e.currentTarget.playbackRate = 5;
             }}
           />
+
           <span className={styles.buttonText}>
             {loading ? "Logging in..." : "Login"}
           </span>
@@ -83,7 +110,12 @@ export default function LoginForm({ onToggle }: LoginFormProps) {
 
       <p className={styles.toggle}>
         Don&apos;t have an account?{" "}
-        <button type="button" onClick={onToggle} className={styles.link}>
+        <button
+          type="button"
+          onClick={onToggle}
+          className={styles.link}
+          disabled={loading}
+        >
           Sign up
         </button>
       </p>

@@ -1,27 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 import { setAuthCookiesOnResponse } from "@/lib/auth/cookies";
-import { getAuthErrorResponse } from "@/lib/errors/authErrors";
 import { loginService } from "@/services/auth";
-import type { LoginRequest } from "@/types/auth/requests";
+import type { LoginRequest } from "@/types/requests";
+import { handleApiError } from "@/errors/api/handleErrors";
 
-// use services/auth/login
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body = (await request.json()) as LoginRequest;
-    const result = await loginService(body?.email, body?.password);
 
-    //if login successful
-    const response = NextResponse.json({ user: result.user });
+    const result = await loginService(body.email, body.password);
+
+    const response = NextResponse.json(
+      {
+        success: true,
+        data: {
+          user: result.userObject,
+        },
+      },
+      {
+        status: 200,
+      },
+    );
+
     setAuthCookiesOnResponse(
       response,
-      { email: result.user.email, role: result.user.role },
+      result.userObject,
       result.accessToken,
-      result.refreshToken
+      result.refreshToken,
     );
 
     return response;
-  } catch (error) {
-    const { status, body } = getAuthErrorResponse(error);
-    return NextResponse.json(body, {status: 403});
+  } catch (err) {
+    return handleApiError(err);
   }
 }

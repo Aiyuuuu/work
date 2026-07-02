@@ -7,25 +7,12 @@ import IconButton from "@mui/material/IconButton";
 import { FaSearch } from "react-icons/fa";
 import { Avatar } from "@mui/material";
 import { useRouter } from "next/navigation";
-import apiClient from "@/lib/axios/axios";
-import { checkSession } from "@/utils/checkSession/checkSession";
+import apiClient from "@/lib/client/axios/apiClient";
 
 export default function Header() {
   const router = useRouter();
   const profileRef = useRef<HTMLDivElement>(null);
   const [profileDropdown, setProfileDropdown] = useState(false);
-
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      const valid = await checkSession();
-
-      if (!valid) {
-        router.replace("/auth");
-      }
-    }, 20000);
-
-    return () => clearInterval(interval);
-  }, [router]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -44,10 +31,10 @@ export default function Header() {
   async function handleLogout() {
     try {
       const res = await apiClient.post("/api/auth/logout");
-      if(res.data.success){
-        router.push("/auth")
+      if (res.data.success) {
+        router.replace("/auth");
+        router.refresh()
       }
-
     } catch (error) {
       console.log(error);
     }

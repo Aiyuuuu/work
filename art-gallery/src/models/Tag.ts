@@ -1,10 +1,11 @@
-import mongoose, {Model, Schema} from "mongoose";
-import { ITag } from "@/types/db/db";
+import mongoose, { Model, Schema } from "mongoose";
+import { ITag } from "@/types/db";
 
-const tagSchema = new Schema<ITag>(
-    {
-    name: {type: String, required: true, unique: true}
-    }
-)
+const tagSchema = new Schema<ITag>({
+  externalId: { type: Number },
+  name: { type: String, required: true, unique: true, trim: true },
+});
 
-export const Tag: Model<ITag> = mongoose.models.Tag || mongoose.model<ITag>("Tag", tagSchema);
+//use existing Tag model or create a new one if absent
+export const Tag: Model<ITag> =
+  mongoose.models.Tag || mongoose.model<ITag>("Tag", tagSchema);

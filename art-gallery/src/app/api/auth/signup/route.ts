@@ -1,30 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
-import { setAuthCookiesOnResponse } from "@/lib/auth/cookies";
-import { getAuthErrorResponse } from "@/lib/errors/authErrors";
-import { signupService } from "@/services/auth";
-import type { SignupRequest } from "@/types/auth/requests";
 
-// uses services/auth/signupService
-export async function POST(request: NextRequest): Promise<NextResponse> {
+import { signupService } from "@/services/auth";
+import { setAuthCookiesOnResponse } from "@/lib/auth/cookies";
+
+import { handleApiError } from "@/errors/api/handleErrors";
+
+import type { SignupRequest } from "@/types/requests";
+
+export async function POST(
+  request: NextRequest,
+): Promise<NextResponse> {
   try {
     const body = (await request.json()) as SignupRequest;
+
     const result = await signupService(
-      body?.username,
-      body?.email,
-      body?.password
+      body.username,
+      body.email,
+      body.password,
     );
 
-    const response = NextResponse.json({ user: result.user });
+    const response = NextResponse.json(
+      {
+        success: true,
+        data: {
+          user: result.userObject,
+        },
+      },
+      {
+        status: 201,
+      },
+    );
+
     setAuthCookiesOnResponse(
       response,
-      { email: result.user.email, role: result.user.role },
+      result.userObject,
       result.accessToken,
-      result.refreshToken
+      result.refreshToken,
     );
 
     return response;
-  } catch (error) {
-    const { status, body } = getAuthErrorResponse(error);
-    return NextResponse.json(body, { status });
+  } catch (err) {
+    return handleApiError(err);
   }
 }

@@ -1,59 +1,50 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Types } from "mongoose";
-import { clearAuthCookiesOnResponse, getAccessTokenFromRequest } from "@/lib/auth/cookies";
-import { AuthError, getAuthErrorResponse } from "@/lib/errors/authErrors";
+
+import {
+  clearAuthCookiesOnResponse,
+  getAccessTokenFromRequest,
+} from "@/lib/auth/cookies";
 import { verifyAccessToken } from "@/lib/auth/signOrVerifyTokens";
+
 import { logoutService } from "@/services/auth";
-import { connectDb } from "@/lib/db/db";
-import { User } from "@/lib/db/models";
-import type { LogoutRequest } from "@/types/auth/requests";
+import type { LogoutRequest } from "@/types/requests";
 
-
+import { handleApiError } from "@/errors/api/handleErrors";
+import { AuthError } from "@/errors/services/authErrors";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const accessToken = getAccessTokenFromRequest(request);
+
     if (!accessToken) {
-      throw new AuthError("MISSING_ACCESS_TOKEN", "Missing access token", 401);
+      throw new AuthError("ACCESS_TOKEN_INVALID");
     }
 
     const payload = await verifyAccessToken(accessToken);
-    if (!payload || !payload.email) {
-      throw new AuthError("INVALID_ACCESS_TOKEN", "Invalid access token", 401);
+
+    if (!payload) {
+      throw new AuthError("ACCESS_TOKEN_INVALID");
     }
 
-    await connectDb();
-    // Find the user using the email from the access token
-    const user = await User.findOne({ email: payload.email });
+    let refreshTokenId: string | undefined;
 
-    if (!user) { //if user isn't found in db
-      throw new AuthError("INVALID_USER", "Invalid user", 401);
-    }
-
-    // Optional refresh token id (used for logging out one device)
-    let refreshTokenId: Types.ObjectId | undefined;
     try {
-      const body = (await request.json()) as LogoutRequest; // Read the request body
-
-      // Convert refreshTokenId string to MongoDB ObjectId
-      if (body?.refreshTokenId) {
-        refreshTokenId = new Types.ObjectId(body.refreshTokenId);
-      }
+      const body = (await request.json()) as LogoutRequest;
+      refreshTokenId = body?.refreshTokenId;
     } catch {
-      // No body provided, logout service will handle it
-      refreshTokenId = undefined;
+      // No request body. Logout all devices.
     }
 
-    // If refreshTokenId exists, logout one device
-    // Otherwise, logout all devices
-    await logoutService(user._id, refreshTokenId); //use logout service
+    await logoutService(payload.sub, refreshTokenId);
 
-    const response = NextResponse.json({ success: true }); // Create a success response
-    clearAuthCookiesOnResponse(response); // Remove auth cookies from the browser
+    const response = new NextResponse(null, {
+      status: 204,
+    });
+
+    clearAuthCookiesOnResponse(response);
+
     return response;
-  } catch (error) {
-    // Convert the error into a proper API response
-    const { status, body } = getAuthErrorResponse(error);
-    return NextResponse.json(body, { status });
+  } catch (err) {
+    return handleApiError(err);
   }
 }

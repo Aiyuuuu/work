@@ -1,63 +1,62 @@
-
-import { COOKIES_REFRESH_COOKIE_MAX_AGE } from "@/constants/authConstants";
-import { AuthError } from "@/lib/errors/authErrors";
-import { hashPassword, verifyPassword } from "@/lib/auth/hashOrVerifyPassword";
+import { REFRESH_TOKEN_EXPIRY_MS } from "@/constants/authConstants";
+import { comparePassword } from "@/lib/auth/hashOrVerifyPasswordOrToken";
 import {
-    createAccessTokenPayload,
-    createRefreshTokenPayload,
-    signAccessToken,
-    signRefreshToken,
+  createAccessTokenPayload,
+  createRefreshTokenPayload,
+  signAccessToken,
+  signRefreshToken,
 } from "@/lib/auth/signOrVerifyTokens";
-import { storeRefreshToken } from "@/lib/auth/tokenStore";
-import { connectDb } from "@/lib/db/db";
-import { User } from "@/lib/db/models";
-import { ILoginServiceReturnPayload } from "@/types/auth/tokenAndUserSession";
+import { storeRefreshToken } from "@/lib/store/RefreshTokenStore";
+import type { ILoginServiceReturnPayload } from "@/types/services";
+import { AuthError } from "@/errors/services/authErrors";
+import { findUserByEmail } from "@/lib/store/userStore";
 
 export async function loginService(
-    email: string,
-    password: string
+  email: string,
+  password: string,
 ): Promise<ILoginServiceReturnPayload> {
-    if (!email || !password) {
-        throw new AuthError("MISSING_CREDENTIALS", "Missing credentials", 400);
-    }
-
+  if (!email || !password) {
+    throw new AuthError("MISSING_CREDENTIALS");
+  }
+  try {
     const normalizedEmail = email.trim().toLowerCase();
-
-    await connectDb();
-    const user = await User.findOne({ email: normalizedEmail });
+    const user = await findUserByEmail(normalizedEmail);
 
     if (!user) {
-        throw new AuthError("INVALID_CREDENTIALS", "Invalid credentials", 401);
+      throw new AuthError("INVALID_CREDENTIALS");
     }
 
-    const ok = await verifyPassword(password, user.passwordHash);
+    const ok = await comparePassword(password, user.passwordHash);
     if (!ok) {
-        throw new AuthError("INVALID_CREDENTIALS", "Invalid credentials", 401);
+      throw new AuthError("INVALID_CREDENTIALS");
     }
 
-    const accessPayload = createAccessTokenPayload(user.email, user.role);
-    const refreshPayload = createRefreshTokenPayload(user.email, user.role);
+    const accessPayload = createAccessTokenPayload(user.id, user.role);
+    const refreshPayload = createRefreshTokenPayload(user.id);
 
     const accessToken = await signAccessToken(accessPayload);
     const refreshToken = await signRefreshToken(refreshPayload);
 
-    const refreshTokenHash = await hashPassword(refreshToken);
-    const expiresAt = new Date(Date.now() + COOKIES_REFRESH_COOKIE_MAX_AGE * 1000);
-    const refreshTokenId = await storeRefreshToken(
-        user._id,
-        refreshTokenHash,
-        expiresAt
-    );
+    const expiresAt = new Date(Date.now() + REFRESH_TOKEN_EXPIRY_MS);
+
+    await storeRefreshToken(user.id, refreshToken, expiresAt);
 
     return {
-        user: {
-            username: user.username,
-            email: user.email,
-            role: user.role,
-            createdAt: user.createdAt,
-        },
-        accessToken,
-        refreshToken,
-        refreshTokenId,
+      userObject: {
+        sub: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+      accessToken,
+      refreshToken,
     };
+  } catch (err) {
+    if (err instanceof AuthError) {
+      throw err;
+    }
+
+    console.error("Failed to login", err);
+    throw new AuthError("INTERNAL_SERVER_ERROR");
+  }
 }

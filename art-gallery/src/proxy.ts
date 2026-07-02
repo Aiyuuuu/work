@@ -39,11 +39,12 @@ export default function proxy(request: NextRequest): NextResponse {
     !isSessionPresent
   ) {
     url.pathname = PUBLIC_ROUTES[0];
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url); //redirect to first entry of public routes (usually /landing)
   }
 
   return NextResponse.next();
 }
+
 
 export const config = {
   matcher: [

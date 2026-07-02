@@ -1,0 +1,145 @@
+import type { IStats, IMeta, UserRole } from "@/types/db";
+import type { JWTPayload } from "jose";
+import { isUserRole } from "@/types/db";
+
+export interface UserObject {
+  //This is the shape of the user object cookie.
+  sub: string; //user id as stored in _id in the database. sub means "subject".
+  username: string;
+  email: string;
+  role: UserRole;
+}
+
+export interface IRefreshTokenPayload extends JWTPayload {
+  //used by signOrVerifyToken.
+  sub: string;
+  type: "refresh";
+}
+
+export interface IAccessTokenPayload extends JWTPayload {
+  //used by signOrVerifyToken.
+  sub: string;
+  role: UserRole;
+  type: "access";
+}
+
+// jose adds iat and exp after decoding.  //used by signOrVerifyToken.
+export interface IDecodedRefreshTokenPayload extends IRefreshTokenPayload {
+  iat: number; // unix timestamp (number)
+  exp: number; // unix timestamp (number)
+}
+
+// jose adds iat and exp after decoding. //used by signOrVerifyToken.
+export interface IDecodedAccessTokenPayload extends IAccessTokenPayload {
+  iat: number; // unix timestamp (number)
+  exp: number; // unix timestamp (number)
+}
+
+// executable function to check the access token type on runtime. //used by signOrVerifyToken.
+export function isAccessTokenPayload(
+  payload: unknown,
+): payload is IDecodedAccessTokenPayload {
+  if (typeof payload !== "object" || payload === null) {
+    return false;
+  }
+
+  const p = payload as Record<string, unknown>;
+
+  return typeof p.sub === "string" && p.type === "access" && isUserRole(p.role);
+}
+
+// executable function to check the refresh token type on runtime. //used by signOrVerifyToken.
+export function isRefreshTokenPayload(
+  payload: unknown,
+): payload is IDecodedRefreshTokenPayload {
+  if (typeof payload !== "object" || payload === null) {
+    return false;
+  }
+
+  const p = payload as Record<string, unknown>;
+
+  return typeof p.sub === "string" && p.type === "refresh";
+}
+
+// executable function to check the access token type on runtime. //used by signOrVerifyToken.
+export function isDecodedAccessTokenPayload(
+  payload: unknown,
+): payload is IDecodedAccessTokenPayload {
+  if (typeof payload !== "object" || payload === null) {
+    return false;
+  }
+
+  const p = payload as Record<string, unknown>;
+
+  return (
+    typeof p.sub === "string" &&
+    p.type === "access" &&
+    isUserRole(p.role) &&
+    typeof p.iat === "number" &&
+    typeof p.exp === "number"
+  );
+}
+
+// executable function to check the refresh token type on runtime. //used by signOrVerifyToken.
+export function isDecodedRefreshTokenPayload(
+  payload: unknown,
+): payload is IDecodedRefreshTokenPayload {
+  if (typeof payload !== "object" || payload === null) {
+    return false;
+  }
+
+  const p = payload as Record<string, unknown>;
+
+  return (
+    typeof p.sub === "string" &&
+    p.type === "refresh" &&
+    typeof p.iat === "number" &&
+    typeof p.exp === "number"
+  );
+}
+
+export type ActiveRefreshTokenVerificationResult =
+  | {
+      valid: true;
+      refreshTokenId: string;
+    }
+  | {
+      valid: false;
+    };
+
+export interface IUser {
+  id: string;
+  username: string;
+  email: string;
+  passwordHash: string;
+  role: UserRole;
+  createdAt: Date;
+}
+
+export interface IMedia {
+  id: string;
+  externalId: number;
+  url: string;
+  hash: string;
+  baseModel: string | null;
+  browsingLevel: number;
+  width: number;
+  height: number;
+  type: "image" | "video";
+  createdAt: Date;
+  username: string;
+  stats: IStats;
+  meta: IMeta | null;
+}
+
+export interface PaginatedMediaResult {
+  items: IMedia[];
+  startPage: number;
+  pagesRequested: number;
+  pagesReturned: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+  hasMore: boolean;
+  nextStartPage: number | null;
+}

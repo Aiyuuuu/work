@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getImageById } from "@/services/home/getImageById";
+import { getMediaByMediaId } from "@/services/media/mediaService";
 import ImageModal from "@/components/ImageModal/ImageModal";
 
 export default async function ImageModalPage({
@@ -8,11 +8,11 @@ export default async function ImageModalPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const image = await getImageById(id);
+  const media = await getMediaByMediaId(id);
 
-  if (!image) {
+  if (!media) {
     notFound();
   }
 
-  return <ImageModal image={image} />;
+  return <ImageModal image={media} />;
 }

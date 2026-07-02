@@ -1,3 +1,5 @@
+import { UserRole } from "./db";
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -5,8 +7,9 @@ export interface LoginRequest {
 
 export interface SignupRequest {
   username: string;
-  email: string;
+  email: string; 
   password: string;
+  role? : UserRole
 }
 
 export interface RefreshRequest {
@@ -14,5 +17,6 @@ export interface RefreshRequest {
 }
 
 export interface LogoutRequest {
+  userId: string;
   refreshTokenId?: string;
 }

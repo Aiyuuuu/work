@@ -15,13 +15,18 @@ const apiClient: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
+const refreshClient = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
+});
+
 async function refreshAuthToken(): Promise<void> {
-  await apiClient.post("/api/auth/refresh");
+  await refreshClient.post("/api/auth/refresh");
 }
 
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => config,
-  (error: AxiosError) => Promise.reject(error)
+  (error: AxiosError) => Promise.reject(error),
 );
 
 apiClient.interceptors.response.use(
@@ -31,12 +36,15 @@ apiClient.interceptors.response.use(
       _retry?: boolean;
     };
 
-    if (error.response?.status === 401 && !originalRequest?._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest?._retry &&
+      originalRequest.url !== "/api/auth/refresh"
+    ) {
       originalRequest._retry = true;
 
       try {
         await refreshAuthToken();
-        console.log("access token refreshed")
         return apiClient(originalRequest);
       } catch {
         if (typeof window !== "undefined") {
@@ -46,7 +54,7 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;

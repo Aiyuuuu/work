@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import styles from "./ImageModal.module.css";
-import type { SingleImage } from "@/types/services/home";
+import type { IMedia } from "@/types/services";
 
 import { Black_Ops_One } from "next/font/google";
 
@@ -15,12 +15,12 @@ const blackOpsOne = Black_Ops_One({
 });
 
 type Props = {
-  image: SingleImage;
+  image: IMedia;
 };
 
 export default function ImageModal({ image }: Props) {
   const router = useRouter();
-   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -40,7 +40,6 @@ export default function ImageModal({ image }: Props) {
 
   return (
     <div className={styles.backdrop} onClick={() => router.back()}>
-
       <video
         src="/stars_1080p_30fps.mp4"
         autoPlay
@@ -64,92 +63,116 @@ export default function ImageModal({ image }: Props) {
             fill
             className={styles.image}
             sizes="90vw"
-            placeholder={image.blurDataUrl ? "blur" : "empty"}
-            blurDataURL={image.blurDataUrl}
+            placeholder={image.blurDataURL ? "blur" : "empty"}
+            blurDataURL={image.blurDataURL!}
           />
         </div>
         <div className={`${styles.infoContainer} ${blackOpsOne.className}`}>
           <div className={styles.infoHeading}>IMAGE INFO</div>
           <div className={styles.infoBody}>
-
-            {image.externalId && <div className={styles.miniInfoBox}>
-              <div className={styles.infoBodyLabels}>External ID :</div>
-              <div className={styles.infoBodyValues}>{image.externalId}</div>
-            </div>}
-
-            {image.baseModel && <div className={styles.miniInfoBox}>
-              <div className={styles.infoBodyLabels}>Base Model :</div>
-              <div className={styles.infoBodyValues}>{image.baseModel}</div>
-            </div>}
-
-           {image.type && <div className={styles.miniInfoBox}>
-              <div className={styles.infoBodyLabels}>Type :</div>
-              <div className={styles.infoBodyValues}>{image.type}</div>
-            </div>}
-
-            {!!image.width && <div className={styles.miniInfoBox}>
-              <div className={styles.infoBodyLabels}>Width :</div>
-              <div className={styles.infoBodyValues}>{image.width}</div>
-            </div>}
-
-            {!!image.height && <div className={styles.miniInfoBox}>
-              <div className={styles.infoBodyLabels}>Height :</div>
-              <div className={styles.infoBodyValues}>{image.height}</div>
-            </div>}
-
-            {image.createdAt && <div className={styles.miniInfoBox}>
-              <div className={styles.infoBodyLabels}>Created At :</div>
-              <div className={styles.infoBodyValues}>
-                {image.createdAt
-                  ? new Date(image.createdAt).toLocaleDateString()
-                  : "—"}
+            {image.externalId && (
+              <div className={styles.miniInfoBox}>
+                <div className={styles.infoBodyLabels}>External ID :</div>
+                <div className={styles.infoBodyValues}>{image.externalId}</div>
               </div>
-            </div>}
+            )}
 
-            {image.username && <div className={styles.miniInfoBox}>
-              <div className={styles.infoBodyLabels}>Username :</div>
-              <div className={styles.infoBodyValues}>{image.username}</div>
-            </div>}
-
-            
-           {!!image.meta?.seed && <div className={styles.miniInfoBox}>
-              <div className={styles.infoBodyLabels}>Seed :</div>
-              <div className={styles.infoBodyValues}>{image.meta?.seed}</div>
-            </div>}
-
-
-            {image.meta?.sampler &&<div className={styles.miniInfoBox}>
-              <div className={styles.infoBodyLabels}>Sampler :</div>
-              <div className={styles.infoBodyValues}>{image.meta?.sampler}</div>
-            </div>}
-
-
-            {!!image.meta?.steps &&<div className={styles.miniInfoBox}>
-              <div className={styles.infoBodyLabels}>Steps :</div>
-              <div className={styles.infoBodyValues}>{image.meta?.steps}</div>
-            </div>}
-
-            {image.stats && <div className={styles.statsContainer}>
-              <div className={styles.cryCount}>😢{image.stats.cryCount}</div>
-              <div className={styles.laughCount}>
-                😂{image.stats.laughCount}
+            {image.baseModel && (
+              <div className={styles.miniInfoBox}>
+                <div className={styles.infoBodyLabels}>Base Model :</div>
+                <div className={styles.infoBodyValues}>{image.baseModel}</div>
               </div>
-              <div className={styles.likeCount}>😍{image.stats.likeCount}</div>
-              <div className={styles.dislikeCount}>
-                👎{image.stats.dislikeCount}
-              </div>
-              <div className={styles.heartCount}>
-                ❤️{image.stats.heartCount}
-              </div>
-              <div className={styles.commentCount}>
-                💬{image.stats.commentCount}
-              </div>
-            </div>}
+            )}
 
-            {image.meta?.prompt &&<div className={styles.promptContainer}>
-              <div className={styles.promptHeading}>PROMPT</div>
-              <div className={styles.promptText}>{image.meta?.prompt}</div>
-            </div>}
+            {image.type && (
+              <div className={styles.miniInfoBox}>
+                <div className={styles.infoBodyLabels}>Type :</div>
+                <div className={styles.infoBodyValues}>{image.type}</div>
+              </div>
+            )}
+
+            {!!image.width && (
+              <div className={styles.miniInfoBox}>
+                <div className={styles.infoBodyLabels}>Width :</div>
+                <div className={styles.infoBodyValues}>{image.width}</div>
+              </div>
+            )}
+
+            {!!image.height && (
+              <div className={styles.miniInfoBox}>
+                <div className={styles.infoBodyLabels}>Height :</div>
+                <div className={styles.infoBodyValues}>{image.height}</div>
+              </div>
+            )}
+
+            {image.createdAt && (
+              <div className={styles.miniInfoBox}>
+                <div className={styles.infoBodyLabels}>Created At :</div>
+                <div className={styles.infoBodyValues}>
+                  {image.createdAt
+                    ? new Date(image.createdAt).toLocaleDateString()
+                    : "—"}
+                </div>
+              </div>
+            )}
+
+            {image.username && (
+              <div className={styles.miniInfoBox}>
+                <div className={styles.infoBodyLabels}>Username :</div>
+                <div className={styles.infoBodyValues}>{image.username}</div>
+              </div>
+            )}
+
+            {!!image.meta?.seed && (
+              <div className={styles.miniInfoBox}>
+                <div className={styles.infoBodyLabels}>Seed :</div>
+                <div className={styles.infoBodyValues}>{image.meta?.seed}</div>
+              </div>
+            )}
+
+            {image.meta?.sampler && (
+              <div className={styles.miniInfoBox}>
+                <div className={styles.infoBodyLabels}>Sampler :</div>
+                <div className={styles.infoBodyValues}>
+                  {image.meta?.sampler}
+                </div>
+              </div>
+            )}
+
+            {!!image.meta?.steps && (
+              <div className={styles.miniInfoBox}>
+                <div className={styles.infoBodyLabels}>Steps :</div>
+                <div className={styles.infoBodyValues}>{image.meta?.steps}</div>
+              </div>
+            )}
+
+            {image.stats && (
+              <div className={styles.statsContainer}>
+                <div className={styles.cryCount}>😢{image.stats.cryCount}</div>
+                <div className={styles.laughCount}>
+                  😂{image.stats.laughCount}
+                </div>
+                <div className={styles.likeCount}>
+                  😍{image.stats.likeCount}
+                </div>
+                <div className={styles.dislikeCount}>
+                  👎{image.stats.dislikeCount}
+                </div>
+                <div className={styles.heartCount}>
+                  ❤️{image.stats.heartCount}
+                </div>
+                <div className={styles.commentCount}>
+                  💬{image.stats.commentCount}
+                </div>
+              </div>
+            )}
+
+            {image.meta?.prompt && (
+              <div className={styles.promptContainer}>
+                <div className={styles.promptHeading}>PROMPT</div>
+                <div className={styles.promptText}>{image.meta?.prompt}</div>
+              </div>
+            )}
           </div>
         </div>
       </div>

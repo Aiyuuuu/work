@@ -1,24 +1,25 @@
-import { Types } from "mongoose";
 import {
-  revokeAllRefreshTokens,
   revokeRefreshToken,
-} from "@/lib/auth/tokenStore";
-import { AuthError } from "@/lib/errors/authErrors";
-import { ILogoutServiceReturnPayload } from "@/types/auth/tokenAndUserSession";
+  revokeAllRefreshTokens,
+} from "@/lib/store/RefreshTokenStore";
+import { AuthError } from "@/errors/services/authErrors";
 
 export async function logoutService(
-  userId: Types.ObjectId,
-  refreshTokenId?: Types.ObjectId
-): Promise<ILogoutServiceReturnPayload> {
+  userId: string,
+  refreshTokenId?: string,
+): Promise<void> {
   if (!userId) {
-    throw new AuthError("MISSING_USER_ID", "Missing user id", 400);
+    throw new AuthError("UNAUTHORIZED");
   }
 
-  if (refreshTokenId) {
-    await revokeRefreshToken(refreshTokenId);
-  } else {
-    await revokeAllRefreshTokens(userId);
+  try {
+    if (refreshTokenId) {
+      await revokeRefreshToken(refreshTokenId);
+    } else {
+      await revokeAllRefreshTokens(userId);
+    }
+  } catch (err) {
+    console.error("Failed to logout", err);
+    throw new AuthError("INTERNAL_SERVER_ERROR");
   }
-
-  return { success: true };
 }

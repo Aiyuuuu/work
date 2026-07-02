@@ -1,28 +1,11 @@
-import type { userRole } from "@/types/userRole";
-import type { JWTPayload } from "jose";
-import { Types } from "mongoose";
+import { UserRole } from "@/types/db";
 
-export type TokenType = "access" | "refresh";
-
-export interface UserObject {
-  email: string;
-  role: userRole;
-}
-
-export interface TypeBaseTokenPayload extends JWTPayload  {
-  email: string;
-  role: userRole;
-  type: TokenType;
-};
-
-
-export type TypeTokenPayload = TypeBaseTokenPayload;
 
 export interface IAuthServiceReturnPayload {
   user: {
     username: string,
     email: string,
-    role: userRole,
+    role: UserRole,
     createdAt: Date,
   },
   accessToken: string,

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
-import type { SingleImage } from "@/types/services/home";
+import type { IMedia } from "@/types/services";
 
 import { Black_Ops_One } from "next/font/google";
 
@@ -14,7 +14,7 @@ const blackOpsOne = Black_Ops_One({
 });
 
 type Props = {
-  image: SingleImage;
+  image: IMedia;
 };
 
 export default function ImagePageClient({ image }: Props) {
@@ -62,8 +62,8 @@ export default function ImagePageClient({ image }: Props) {
             fill
             className={styles.image}
             sizes="90vw"
-            placeholder={image.blurDataUrl ? "blur" : "empty"}
-            blurDataURL={image.blurDataUrl}
+            placeholder={image.blurDataURL ? "blur" : "empty"}
+            blurDataURL={image.blurDataURL!}
           />
         </div>
 
