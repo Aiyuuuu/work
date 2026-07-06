@@ -1,5 +1,6 @@
 import type { UserObject} from "@/types/lib";
-import type { IMedia as IMediaDb } from "@/types/db";
+import type { IMedia as IMediaDb, IUser as IUserDb } from "@/types/db";
+import { ErrorCode } from "@/errors/errors";
 
 
 export interface ILoginServiceReturnPayload {
@@ -17,6 +18,12 @@ export interface IRefreshServiceReturnPayload {
   accessToken: string,
   refreshToken: string
 }
+
+
+export interface IUser extends Omit<IUserDb, "_id" | "__v"> {
+  id: string;
+}
+
 
 export interface IMedia extends Omit<IMediaDb, "_id" | "__v"> {
   id: string;
@@ -50,8 +57,11 @@ export type ServiceResponse<TData> =
   | {
       success: false;
       error: {
-        code: string; // We will standardize these codes in the next step
+        code: ErrorCode; // We will standardize these codes in the next step
         message: string;
       };
     };
 
+
+export type ServiceSuccessResponse<T> = Extract<ServiceResponse<T>, { success: true }>;
+export type ServiceErrorResponse<T> = Extract<ServiceResponse<T>, { success: false }>;
