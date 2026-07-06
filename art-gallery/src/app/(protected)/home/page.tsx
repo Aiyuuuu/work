@@ -1,6 +1,6 @@
 import ImageGrid from "@/components/ImageGrid/ImageGrid";
 import styles from "./home.module.css";
-import { getPaginatedMedia } from "@/services/media/mediaService";
+import { getPaginatedMedia } from "@/services/media";
 
 export default async function HomePage() {
   const result = await getPaginatedMedia(1, 1);

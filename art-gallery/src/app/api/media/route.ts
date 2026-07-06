@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAccessTokenFromRequest } from "@/lib/auth/cookies";
 import { verifyAccessToken } from "@/lib/auth/signOrVerifyTokens";
 
-import { getPaginatedMedia } from "@/services/media/mediaService";
+import { getPaginatedMedia } from "@/services/media";
 
 import { AuthError } from "@/errors/services/authErrors";
 import { handleApiError } from "@/errors/api/handleErrors";

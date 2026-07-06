@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getMediaByMediaId } from "@/services/media/mediaService";
+import { getMediaByMediaId } from "@/services/media";
 import ImagePageClient from "./ImagePageClient";
 
 export default async function ImagePage({

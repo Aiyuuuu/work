@@ -8,7 +8,7 @@ import {
   isProtectedRoute,
   isAuthRoute,
 } from "@/utils/routes/routes";
-import { PROTECTED_ROUTES, PUBLIC_ROUTES } from "./constants/routeConstants";
+import { PROTECTED_ROUTES, PUBLIC_ROUTES } from "@/constants/routeConstants";
 
 export default function proxy(request: NextRequest): NextResponse {
   const pathname = request.nextUrl.pathname; //extract the pathname from the request

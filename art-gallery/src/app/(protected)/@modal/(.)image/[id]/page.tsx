@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getMediaByMediaId } from "@/services/media/mediaService";
+import { getMediaByMediaId } from "@/services/media";
 import ImageModal from "@/components/ImageModal/ImageModal";
 
 export default async function ImageModalPage({

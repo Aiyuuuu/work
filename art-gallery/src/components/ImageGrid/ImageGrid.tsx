@@ -9,10 +9,7 @@ import styles from "./ImageGrid.module.css";
 
 import apiClient from "@/lib/client/axios/apiClient";
 
-import type {
-  IMedia,
-  PaginatedMediaResult,
-} from "@/types/services";
+import type { IMedia, PaginatedMediaResult } from "@/types/services";
 
 type ImageGridProps = {
   initialImages: IMedia[];
@@ -34,10 +31,9 @@ export default function ImageGrid({ initialImages }: ImageGridProps) {
     setLoading(true);
 
     try {
-      const response =
-        await apiClient.get(
-          `/api/media?startPage=${page}&pages=1`,
-        );
+      const response = await apiClient.get(
+        `/api/media?startPage=${page}&pages=1`,
+      );
 
       const data = response.data.data;
 

@@ -1,6 +1,7 @@
 import { connectDb } from "@/lib/db/db";
 import { Media } from "@/lib/db/models";
-import type { IMedia, PaginatedMediaResult } from "@/types/services";
+import { BLUR_HASH_CONSTANT } from "@/constants/imageConstants";
+import type { IMedia, IPaginatedMedia } from "@/types/services";
 import { mapMediaDocument } from "@/mappers/media";
 import { PAGE_SIZE } from "@/constants/imageConstants";
 import { MediaError } from "@/errors/services/mediaError";
@@ -24,11 +25,13 @@ export async function getMediaByMediaId(
 
     return {
       ...mappedImage,
-      blurDataURL: blurHashToDataURL(
-        mappedImage.hash,
-        mappedImage.width,
-        mappedImage.height,
-      ),
+      blurDataURL: !mappedImage.hash
+        ? BLUR_HASH_CONSTANT
+        : blurHashToDataURL(
+            mappedImage.hash,
+            mappedImage.width,
+            mappedImage.height,
+          ),
     };
   } catch (err) {
     if (err instanceof MediaError) {
@@ -43,7 +46,7 @@ export async function getMediaByMediaId(
 export async function getPaginatedMedia(
   startPage: number,
   pages: number,
-): Promise<PaginatedMediaResult> {
+): Promise<IPaginatedMedia> {
   if (
     !Number.isInteger(startPage) ||
     !Number.isInteger(pages) ||
@@ -102,7 +105,6 @@ export async function getPaginatedMedia(
         blurDataURL: blurHashToDataURL(item.hash, item.width, item.height),
       })),
     };
-
   } catch (err) {
     if (err instanceof MediaError) {
       throw err;

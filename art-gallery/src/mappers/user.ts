@@ -1,11 +1,10 @@
-import type { IUser as DbUser } from "@/types/db";
-import type { IUser } from "@/types/lib";
+import type { IUser } from "@/types/db";
 
 export function mapUserDocument({
   _id,
   __v: _, 
   ...user
-}: DbUser): IUser {
+}: IUser) {
   return {
     id: _id.toString(),
     ...user,

@@ -7,14 +7,23 @@ import {
   signRefreshToken,
   verifyRefreshToken as verifyRefreshTokenJWT,
 } from "@/lib/auth/signOrVerifyTokens";
-import type { ILoginServiceReturnPayload } from "@/types/services";
 import { AuthError } from "@/errors/services/authErrors";
 import { findUserByEmail, findUserById } from "@/services/user";
-import type { ISignupServiceReturnPayload, IRefreshServiceReturnPayload } from "@/types/services";
+import type {
+  ISignupServiceReturnPayload,
+  IRefreshServiceReturnPayload,
+  ILoginServiceReturnPayload,
+  ServiceResponse,
+} from "@/types/services";
 import { createUser } from "@/services/user";
 import type { UserRole } from "@/types/db";
 import { UserStoreError } from "@/errors/lib/userStoreErrors";
-import { verifyActiveRefreshToken as verifyRefreshTokenDB, storeRefreshToken, revokeRefreshToken, revokeAllRefreshTokens } from "@/services//refreshToken";
+import {
+  verifyActiveRefreshToken as verifyRefreshTokenDB,
+  storeRefreshToken,
+  revokeRefreshToken,
+  revokeAllRefreshTokens,
+} from "@/services//refreshToken";
 
 async function loginService(
   email: string,
@@ -65,10 +74,6 @@ async function loginService(
     throw new AuthError("INTERNAL_SERVER_ERROR");
   }
 }
-
-
-
-
 
 async function signupService(
   username: string,
@@ -122,10 +127,6 @@ async function signupService(
     throw new AuthError("INTERNAL_SERVER_ERROR");
   }
 }
-
-
-
-
 
 /* flow:
 1) validate refresh token existence on request
@@ -198,9 +199,6 @@ async function refreshService(
   }
 }
 
-
-
-
 async function logoutService(
   userId: string,
   refreshTokenId?: string,
@@ -221,5 +219,4 @@ async function logoutService(
   }
 }
 
-
-export {loginService, signupService, refreshService, logoutService}
+export { loginService, signupService, refreshService, logoutService };

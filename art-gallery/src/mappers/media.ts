@@ -1,11 +1,10 @@
-import type { IMedia as DbMedia } from "@/types/db";
-import type { IMedia } from "@/types/lib";
+import type { IMedia } from "@/types/db";
 
 export function mapMediaDocument({
   _id,
   __v,
   ...media
-}: DbMedia): IMedia {
+}: IMedia){
   const plainMedia = JSON.parse(JSON.stringify(media));
 
   return {
