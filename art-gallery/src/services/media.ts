@@ -1,11 +1,18 @@
 import { connectDb } from "@/lib/db/db";
 import { Media } from "@/lib/db/models";
-import type { IMedia } from "@/types/lib";
-import { mapMediaDocument } from "@/lib/mappers/media";
+import type { IMedia, PaginatedMediaResult } from "@/types/services";
+import { mapMediaDocument } from "@/mappers/media";
 import { PAGE_SIZE } from "@/constants/imageConstants";
-import type { PaginatedMediaResult } from "@/types/lib";
+import { MediaError } from "@/errors/services/mediaError";
+import { blurHashToDataURL } from "@/utils/blurhash/blurhash";
 
-export async function getMediaByMediaId(mediaId: string): Promise<IMedia | null> {
+export async function getMediaByMediaId(
+  mediaId: string,
+): Promise<IMedia | null> {
+  if (!mediaId) {
+    throw new MediaError("BAD_REQUEST");
+  }
+
   try {
     await connectDb();
 
@@ -13,17 +20,39 @@ export async function getMediaByMediaId(mediaId: string): Promise<IMedia | null>
 
     if (!image) return null;
 
-    return mapMediaDocument(image)
+    const mappedImage = mapMediaDocument(image);
+
+    return {
+      ...mappedImage,
+      blurDataURL: blurHashToDataURL(
+        mappedImage.hash,
+        mappedImage.width,
+        mappedImage.height,
+      ),
+    };
   } catch (err) {
+    if (err instanceof MediaError) {
+      throw err;
+    }
+
     console.error("Failed to get media by ID", err);
-    throw err;
+    throw new MediaError("INTERNAL_SERVER_ERROR");
   }
 }
 
 export async function getPaginatedMedia(
-  startPage = 1,
-  pages = 1,
+  startPage: number,
+  pages: number,
 ): Promise<PaginatedMediaResult> {
+  if (
+    !Number.isInteger(startPage) ||
+    !Number.isInteger(pages) ||
+    startPage < 1 ||
+    pages < 1
+  ) {
+    throw new MediaError("BAD_REQUEST");
+  }
+
   try {
     await connectDb();
 
@@ -38,7 +67,7 @@ export async function getPaginatedMedia(
     const [items, totalItems] = await Promise.all([
       Media.find({})
         // Stable sort so pagination does not jump around
-        .sort({ createdAt:-1, _id: -1 }) //sort based on _id.
+        .sort({ createdAt: -1, _id: -1 }) //sort based on _id.
         .skip(skip)
         .limit(limit)
         .lean(),
@@ -54,7 +83,7 @@ export async function getPaginatedMedia(
         ? safeStartPage + pagesReturned
         : null;
 
-    return {
+    const mappedPaginatedMedia = {
       items: items.map(mapMediaDocument),
       startPage: safeStartPage,
       pagesRequested: safePages,
@@ -65,8 +94,21 @@ export async function getPaginatedMedia(
       hasMore: nextStartPage !== null,
       nextStartPage,
     };
+
+    return {
+      ...mappedPaginatedMedia,
+      items: mappedPaginatedMedia.items.map((item) => ({
+        ...item,
+        blurDataURL: blurHashToDataURL(item.hash, item.width, item.height),
+      })),
+    };
+
   } catch (err) {
+    if (err instanceof MediaError) {
+      throw err;
+    }
+
     console.error("Failed to get paginated media", err);
-    throw err;
+    throw new MediaError("INTERNAL_SERVER_ERROR");
   }
 }

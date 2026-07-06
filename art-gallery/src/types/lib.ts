@@ -1,4 +1,4 @@
-import type { IStats, IMeta, UserRole } from "@/types/db";
+import type { UserRole } from "@/types/db";
 import type { JWTPayload } from "jose";
 import { isUserRole } from "@/types/db";
 
@@ -107,39 +107,3 @@ export type ActiveRefreshTokenVerificationResult =
       valid: false;
     };
 
-export interface IUser {
-  id: string;
-  username: string;
-  email: string;
-  passwordHash: string;
-  role: UserRole;
-  createdAt: Date;
-}
-
-export interface IMedia {
-  id: string;
-  externalId: number;
-  url: string;
-  hash: string;
-  baseModel: string | null;
-  browsingLevel: number;
-  width: number;
-  height: number;
-  type: "image" | "video";
-  createdAt: Date;
-  username: string;
-  stats: IStats;
-  meta: IMeta | null;
-}
-
-export interface PaginatedMediaResult {
-  items: IMedia[];
-  startPage: number;
-  pagesRequested: number;
-  pagesReturned: number;
-  pageSize: number;
-  totalItems: number;
-  totalPages: number;
-  hasMore: boolean;
-  nextStartPage: number | null;
-}

@@ -1,6 +1,6 @@
 import { User } from "@/lib/db/models";
 import { connectDb } from "@/lib/db/db";
-import { mapUserDocument } from "@/lib/mappers/user";
+import { mapUserDocument } from "@/mappers/user";
 import { hashPassword } from "@/lib/auth/hashOrVerifyPasswordOrToken";
 import type { IUser } from "@/types/lib";
 import type { UserRole } from "@/types/db";
