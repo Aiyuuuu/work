@@ -98,12 +98,11 @@ export function isDecodedRefreshTokenPayload(
   );
 }
 
-export type ActiveRefreshTokenVerificationResult =
-  | {
-      valid: true;
+export interface ActiveRefreshTokenVerificationResult 
+    {
       refreshTokenId: string;
     }
-  | {
-      valid: false;
-    };
+ 
 
+
+  

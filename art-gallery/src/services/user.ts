@@ -11,7 +11,7 @@ export async function findUserById(
   userId: string,
 ): Promise<ServiceResponse<IUser>> {
   if (!userId) {
-    return errorResponse("INVALID_CREDENTIALS");
+    return errorResponse("BAD_REQUEST");
   }
 
   try {
@@ -32,12 +32,13 @@ export async function findUserByEmail(
   email: string,
 ): Promise<ServiceResponse<IUser>> {
   if (!email) {
-    return errorResponse("INVALID_CREDENTIALS");
+    return errorResponse("BAD_REQUEST");
   }
   try {
     await connectDb();
+    const normalizedEmail = email.trim().toLowerCase();
     const user = await User.findOne({
-      email,
+      email: normalizedEmail,
     }).lean();
     return user
       ? successResponse(mapUserDocument(user))
@@ -55,14 +56,17 @@ export async function createUser(
   role?: UserRole,
 ): Promise<ServiceResponse<IUser>> {
   if (!username || !email || !password) {
-    return errorResponse("INVALID_CREDENTIALS");
+    return errorResponse("MISSING_CREDENTIALS");
   }
 
   try {
     await connectDb();
 
+    const normalizedEmail = email.trim().toLowerCase();
+    const trimmedUsername = username.trim();
+
     const existing = await User.exists({
-      email,
+      email: normalizedEmail,
     });
 
     if (existing) {
@@ -70,8 +74,8 @@ export async function createUser(
     }
 
     const user = await User.create({
-      username,
-      email,
+      username: trimmedUsername,
+      email: normalizedEmail,
       passwordHash: await hashPassword(password),
       role,
       createdAt: new Date(),
@@ -88,7 +92,7 @@ export async function deleteUser(
   userId: string,
 ): Promise<ServiceResponse<null>> {
   if (!userId) {
-    return errorResponse("INVALID_CREDENTIALS");
+    return errorResponse("BAD_REQUEST");
   }
 
   try {

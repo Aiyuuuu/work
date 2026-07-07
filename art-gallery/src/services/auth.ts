@@ -1,4 +1,3 @@
-import { REFRESH_TOKEN_EXPIRY_MS } from "@/constants/authConstants";
 import { comparePassword } from "@/lib/auth/hashOrVerifyPasswordOrToken";
 import {
   createAccessTokenPayload,
@@ -25,6 +24,7 @@ import {
   successResponse,
   errorResponse,
   isInternalServerError,
+  getSuccessResponseData,
 } from "./_response";
 
 async function loginService(
@@ -35,9 +35,7 @@ async function loginService(
     return errorResponse("MISSING_CREDENTIALS");
   }
   try {
-    const normalizedEmail = email.trim().toLowerCase();
-
-    const findUserByEmailServiceResult = await findUserByEmail(normalizedEmail);
+    const findUserByEmailServiceResult = await findUserByEmail(email);
 
     if (!findUserByEmailServiceResult.success) {
       // return internal server error as is
@@ -49,7 +47,7 @@ async function loginService(
       return errorResponse("INVALID_CREDENTIALS");
     }
 
-    const user = findUserByEmailServiceResult.data;
+    const user = getSuccessResponseData(findUserByEmailServiceResult);
 
     const ok = await comparePassword(password, user.passwordHash);
     if (!ok) {
@@ -62,9 +60,14 @@ async function loginService(
     const accessToken = await signAccessToken(accessPayload);
     const refreshToken = await signRefreshToken(refreshPayload);
 
-    const expiresAt = new Date(Date.now() + REFRESH_TOKEN_EXPIRY_MS);
+    const storeRefreshTokenServiceResult = await storeRefreshToken(
+      user.id,
+      refreshToken,
+    );
 
-    await storeRefreshToken(user.id, refreshToken, expiresAt);
+    if (!storeRefreshTokenServiceResult.success) {
+      return storeRefreshTokenServiceResult
+    }
 
     return successResponse({
       userObject: {
@@ -92,23 +95,24 @@ async function signupService(
     return errorResponse("MISSING_CREDENTIALS");
   }
   try {
-    const trimmedUsername = username.trim();
-    const normalizedEmail = email.trim().toLowerCase();
-
     const createUserServiceResult = await createUser(
-      trimmedUsername,
-      normalizedEmail,
+      username,
+      email,
       password,
       role,
     );
 
     if (!createUserServiceResult.success) {
+      // return internal server error as is
+      if (isInternalServerError(createUserServiceResult)) {
+        return errorResponse("INTERNAL_SERVER_ERROR");
+      }
       // ERROR BUBBLING: If creation failed for ANY reason, return the error payload directly.
       // we don't need error mapping for security here
       return createUserServiceResult;
     }
 
-    const user = createUserServiceResult.data;
+    const user = getSuccessResponseData(createUserServiceResult);
 
     const accessPayload = createAccessTokenPayload(user.id, user.role);
     const refreshPayload = createRefreshTokenPayload(user.id);
@@ -116,9 +120,11 @@ async function signupService(
     const accessToken = await signAccessToken(accessPayload);
     const refreshToken = await signRefreshToken(refreshPayload);
 
-    const expiresAt = new Date(Date.now() + REFRESH_TOKEN_EXPIRY_MS);
+    const storeRefreshTokenServiceResult = await storeRefreshToken(user.id, refreshToken);
 
-    await storeRefreshToken(user.id, refreshToken, expiresAt);
+    if(!storeRefreshTokenServiceResult.success){
+      return storeRefreshTokenServiceResult;
+    }
 
     return successResponse({
       userObject: {
@@ -163,14 +169,20 @@ async function refreshService(
     }
 
     // verify that the refresh token is present in the database and neither revoked nor expired
-    const payloadDb = await verifyRefreshTokenDB(payloadJWT.sub, refreshToken);
+    const verifyRefreshTokenDBServiceResult = await verifyRefreshTokenDB(payloadJWT.sub, refreshToken);
 
-    if (payloadDb.valid === false) {
-      return errorResponse("REFRESH_TOKEN_INVALID");
+    if(!verifyRefreshTokenDBServiceResult.success){
+      return verifyRefreshTokenDBServiceResult;
     }
 
+    const verifyRefreshTokenDBServiceResultData = getSuccessResponseData(verifyRefreshTokenDBServiceResult)
+
     // revoke refresh token in db
-    await revokeRefreshToken(payloadDb.refreshTokenId);
+    const revokeRefreshTokenServiceResult = await revokeRefreshToken(verifyRefreshTokenDBServiceResultData.refreshTokenId);
+
+    if(!revokeRefreshTokenServiceResult.success){
+      return revokeRefreshTokenServiceResult;
+    }
 
     // verify and extract the user from db who owns the refresh token
     const findUserByIdServiceResult = await findUserById(payloadJWT.sub);
@@ -185,7 +197,7 @@ async function refreshService(
       return errorResponse("UNAUTHORIZED");
     }
 
-    const user = findUserByIdServiceResult.data;
+    const user = getSuccessResponseData(findUserByIdServiceResult);
 
     // sign(create) new access and refresh tokens (new refresh token due to "token rotation")
     const accessPayload = createAccessTokenPayload(user.id, user.role);
@@ -195,9 +207,11 @@ async function refreshService(
     const newRefreshToken = await signRefreshToken(refreshPayload);
 
     // store new refresh token in db
-    const expiresAt = new Date(Date.now() + REFRESH_TOKEN_EXPIRY_MS);
-    await storeRefreshToken(user.id, newRefreshToken, expiresAt);
+    const storeRefreshTokenServiceResult = await storeRefreshToken(user.id, newRefreshToken);
 
+    if(!storeRefreshTokenServiceResult.success){
+      return storeRefreshTokenServiceResult;
+    }
     // return new access and refresh tokens
     return successResponse({
       accessToken,
@@ -219,9 +233,15 @@ async function logoutService(
 
   try {
     if (refreshTokenId) {
-      await revokeRefreshToken(refreshTokenId);
+      const revokeRefreshTokenServiceResult = await revokeRefreshToken(refreshTokenId);
+      if(!revokeRefreshTokenServiceResult.success){
+        return revokeRefreshTokenServiceResult;
+      }
     } else {
-      await revokeAllRefreshTokens(userId);
+      const revokeRefreshTokenServiceResult = await revokeAllRefreshTokens(userId);
+      if(!revokeRefreshTokenServiceResult.success){
+       return revokeRefreshTokenServiceResult;
+      }
     }
     return successResponse(null);
   } catch (err) {

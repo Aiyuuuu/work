@@ -46,22 +46,25 @@ export interface IPaginatedMedia {
 
 /**
  * A standardized response wrapper for all service-level operations.
- * Uses a discriminated union so TypeScript can automatically type-check 
- * the 'data' or 'error' property depending on the 'success' flag.
  */
-export type ServiceResponse<TData> =
-  | {
-      success: true;
-      data: TData; // TData is dynamic and changes per service
-    }
-  | {
-      success: false;
-      error: {
-        code: ErrorCode; // We will standardize these codes in the next step
-        message: string;
-      };
-    };
+// src/types/services/response.ts
 
+export interface SuccessResponse<TData> {
+  success: true;
+  data: TData;
+}
 
-export type ServiceSuccessResponse<T> = Extract<ServiceResponse<T>, { success: true }>;
-export type ServiceErrorResponse<T> = Extract<ServiceResponse<T>, { success: false }>;
+// We set a default generic parameter 'TErrorCode = ErrorCode'
+// so we can simply write 'ErrorResponse' without passing a generic.
+export interface ErrorResponse<TErrorCode = ErrorCode> {
+  success: false;
+  error: {
+    code: TErrorCode;
+    message: string;
+  };
+}
+
+// Combined Union Type
+export type ServiceResponse<TData, TErrorCode = ErrorCode> =
+  | SuccessResponse<TData>
+  | ErrorResponse<TErrorCode>;
