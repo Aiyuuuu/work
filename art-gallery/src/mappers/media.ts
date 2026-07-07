@@ -1,4 +1,4 @@
-import type { IMedia } from "@/types/db";
+import type { IMedia, IStats, IMeta } from "@/types/db";
 
 export function mapMediaDocument({
   _id,

@@ -2,6 +2,33 @@ import type { UserObject} from "@/types/lib";
 import type { IMedia as IMediaDb, IUser as IUserDb } from "@/types/db";
 import { ErrorCode } from "@/errors/errors";
 
+/**
+ * A standardized response wrapper for all service-level operations.
+ */
+// src/types/services/response.ts
+
+export interface SuccessResponse<TData> {
+  success: true;
+  data: TData;
+}
+
+// We set a default generic parameter 'TErrorCode = ErrorCode'
+// so we can simply write 'ErrorResponse' without passing a generic.
+export interface ErrorResponse<TErrorCode = ErrorCode> {
+  success: false;
+  error: {
+    code: TErrorCode;
+    message: string;
+  };
+}
+
+// Combined Union Type
+export type ServiceResponse<TData, TErrorCode = ErrorCode> =
+  | SuccessResponse<TData>
+  | ErrorResponse<TErrorCode>;
+
+
+
 
 export interface ILoginServiceReturnPayload {
   userObject: UserObject;
@@ -44,27 +71,4 @@ export interface IPaginatedMedia {
 
 
 
-/**
- * A standardized response wrapper for all service-level operations.
- */
-// src/types/services/response.ts
 
-export interface SuccessResponse<TData> {
-  success: true;
-  data: TData;
-}
-
-// We set a default generic parameter 'TErrorCode = ErrorCode'
-// so we can simply write 'ErrorResponse' without passing a generic.
-export interface ErrorResponse<TErrorCode = ErrorCode> {
-  success: false;
-  error: {
-    code: TErrorCode;
-    message: string;
-  };
-}
-
-// Combined Union Type
-export type ServiceResponse<TData, TErrorCode = ErrorCode> =
-  | SuccessResponse<TData>
-  | ErrorResponse<TErrorCode>;

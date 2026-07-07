@@ -4,56 +4,58 @@ import { BLUR_HASH_CONSTANT } from "@/constants/imageConstants";
 import type { IMedia, IPaginatedMedia } from "@/types/services";
 import { mapMediaDocument } from "@/mappers/media";
 import { PAGE_SIZE } from "@/constants/imageConstants";
-import { MediaError } from "@/errors/services/mediaError";
 import { blurHashToDataURL } from "@/utils/blurhash/blurhash";
+import type { ServiceResponse } from "@/types/services";
+import { errorResponse, successResponse } from "./_response";
+import { MAX_REQUESTED_PAGES } from "@/constants/imageConstants";
+import { isValidMongooseObjectId } from "@/utils/validation/checkValidity";
 
 export async function getMediaByMediaId(
   mediaId: string,
-): Promise<IMedia | null> {
-  if (!mediaId) {
-    throw new MediaError("BAD_REQUEST");
+): Promise<ServiceResponse<IMedia>> {
+  if (!mediaId || !isValidMongooseObjectId(mediaId)) {
+    return errorResponse("BAD_REQUEST");
   }
 
   try {
     await connectDb();
 
-    const image = await Media.findById(mediaId).lean();
+    const media = await Media.findById(mediaId).lean();
 
-    if (!image) return null;
+    if (!media) return errorResponse("MEDIA_NOT_FOUND");
 
-    const mappedImage = mapMediaDocument(image);
+    const mappedMedia = mapMediaDocument(media);
 
-    return {
-      ...mappedImage,
-      blurDataURL: !mappedImage.hash
+    return successResponse({
+      ...mappedMedia,
+      blurDataURL: !mappedMedia.hash
         ? BLUR_HASH_CONSTANT
         : blurHashToDataURL(
-            mappedImage.hash,
-            mappedImage.width,
-            mappedImage.height,
+            mappedMedia.hash,
+            mappedMedia.width,
+            mappedMedia.height,
           ),
-    };
+    });
   } catch (err) {
-    if (err instanceof MediaError) {
-      throw err;
-    }
-
     console.error("Failed to get media by ID", err);
-    throw new MediaError("INTERNAL_SERVER_ERROR");
+    return errorResponse("INTERNAL_SERVER_ERROR");
   }
 }
 
 export async function getPaginatedMedia(
   startPage: number,
   pages: number,
-): Promise<IPaginatedMedia> {
+): Promise<ServiceResponse<IPaginatedMedia>> {
   if (
-    !Number.isInteger(startPage) ||
-    !Number.isInteger(pages) ||
+    typeof startPage !== "number" ||
+    typeof pages !== "number" ||
+    !Number.isFinite(startPage) ||
+    !Number.isFinite(pages) ||
     startPage < 1 ||
-    pages < 1
+    pages < 1 ||
+    pages > MAX_REQUESTED_PAGES
   ) {
-    throw new MediaError("BAD_REQUEST");
+    return errorResponse("BAD_REQUEST");
   }
 
   try {
@@ -74,7 +76,7 @@ export async function getPaginatedMedia(
         .skip(skip)
         .limit(limit)
         .lean(),
-      Media.countDocuments(),
+      Media.estimatedDocumentCount(),
     ]);
 
     const totalPages = Math.ceil(totalItems / PAGE_SIZE);
@@ -86,8 +88,22 @@ export async function getPaginatedMedia(
         ? safeStartPage + pagesReturned
         : null;
 
-    const mappedPaginatedMedia = {
-      items: items.map(mapMediaDocument),
+    const mappedItems = items.map((item) => {
+      const mappedItem = mapMediaDocument(item);
+      return {
+        ...mappedItem,
+        blurDataURL: mappedItem.hash
+          ? blurHashToDataURL(
+              mappedItem.hash,
+              mappedItem.width,
+              mappedItem.height,
+            )
+          : BLUR_HASH_CONSTANT,
+      };
+    });
+
+    return successResponse({
+      items: mappedItems,
       startPage: safeStartPage,
       pagesRequested: safePages,
       pagesReturned,
@@ -96,21 +112,9 @@ export async function getPaginatedMedia(
       totalPages,
       hasMore: nextStartPage !== null,
       nextStartPage,
-    };
-
-    return {
-      ...mappedPaginatedMedia,
-      items: mappedPaginatedMedia.items.map((item) => ({
-        ...item,
-        blurDataURL: blurHashToDataURL(item.hash, item.width, item.height),
-      })),
-    };
+    });
   } catch (err) {
-    if (err instanceof MediaError) {
-      throw err;
-    }
-
     console.error("Failed to get paginated media", err);
-    throw new MediaError("INTERNAL_SERVER_ERROR");
+    return errorResponse("INTERNAL_SERVER_ERROR");
   }
 }

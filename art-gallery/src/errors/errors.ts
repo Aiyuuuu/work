@@ -56,13 +56,17 @@ export const ERRORS = {
     status: 401,
     message: "Authentication is required to access this resource.",
   },
+  ACCESS_TOKEN_MISSING: {
+    status: 400,
+    message: "Access token is missing from the request.",
+  },
   ACCESS_TOKEN_EXPIRED: {
     status: 401,
     message: "Your access token has expired.",
   },
   ACCESS_TOKEN_INVALID: {
     status: 401,
-    message: "Your access token is invalid or has been tampered with.",
+    message: "Your access token is invalid.",
   },
   REFRESH_TOKEN_MISSING: {
     status: 400,
@@ -98,7 +102,6 @@ export const ERRORS = {
     status: 403,
     message: "You cannot modify or delete resources owned by other users.",
   },
-
   // ── USER & PROFILE ERRORS ──
   USER_NOT_FOUND: {
     status: 404,

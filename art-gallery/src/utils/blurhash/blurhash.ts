@@ -74,7 +74,7 @@ export function blurHashToDataURL(
     // Neutral fallback SVG (gray background) so the UI doesn't crash on bad data
     const decodeWidth = 8;
     const decodeHeight = 8;
-    const fallbackSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${decodeWidth} ${decodeHeight}" preserveAspectRatio="none"><rect width="100%" height="100%" fill="#3f3f3fff" /></svg>`;
+    const fallbackSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${decodeWidth} ${decodeHeight}" preserveAspectRatio="none"><rect width="100%" height="100%" fill="#3f3f3f" /></svg>`;
     const fallbackBase64 =
       typeof window === "undefined"
         ? Buffer.from(fallbackSvg).toString("base64")
