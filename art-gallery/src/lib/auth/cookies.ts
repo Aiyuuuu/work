@@ -5,76 +5,42 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   AUTH_COOKIE_NAME,
   REFRESH_COOKIE_NAME,
-  USER_OBJECT_COOKIE_NAME,
   COOKIES_HTTP_ONLY,
   COOKIES_SAME_SITE,
   COOKIES_AUTH_COOKIE_MAX_AGE,
   COOKIES_REFRESH_COOKIE_MAX_AGE,
-  COOKIES_USER_OBJECT_MAX_AGE,
-  COOKIES_SECURE
+  COOKIES_SECURE,
 } from "@/constants/authConstants";
 
-import type { UserObject } from "@/types/lib";
-
 //appends auth cookies to response
+//set refresh and access token cookies on response
 export function setAuthCookiesOnResponse(
   response: NextResponse,
-  userObject: UserObject,
   accessToken: string,
   refreshToken: string,
 ): void {
-  setTokenCookiesOnResponse(response, accessToken, refreshToken);
-  response.cookies.set({ // set user object cookie
-    name: USER_OBJECT_COOKIE_NAME,
-    value: JSON.stringify({
-      sub: userObject.sub,
-      username: userObject.username,
-      email: userObject.email,
-      role: userObject.role,
-    }),
-    httpOnly: false,
-    sameSite: COOKIES_SAME_SITE,
-    path: "/",
-    maxAge: COOKIES_USER_OBJECT_MAX_AGE,
-    secure: COOKIES_SECURE
-  });
-}
-
-
-
-
-//set refresh and access token cookies on response
-export function setTokenCookiesOnResponse(
-  response: NextResponse,
-  accessToken: string,
-  refreshToken: string,
-): void {
-  response.cookies.set({ //set access token cookie
+  response.cookies.set({
+    //set access token cookie
     name: AUTH_COOKIE_NAME,
     value: accessToken,
     httpOnly: COOKIES_HTTP_ONLY,
     sameSite: COOKIES_SAME_SITE,
     path: "/",
     maxAge: COOKIES_AUTH_COOKIE_MAX_AGE,
-    secure: COOKIES_SECURE // true means cookies are sent over HTTPS only
+    secure: COOKIES_SECURE, // true means cookies are sent over HTTPS only
   });
 
-  response.cookies.set({ //set refresh token cookie
+  response.cookies.set({
+    //set refresh token cookie
     name: REFRESH_COOKIE_NAME,
     value: refreshToken,
     httpOnly: COOKIES_HTTP_ONLY,
     sameSite: COOKIES_SAME_SITE,
     path: "/",
     maxAge: COOKIES_REFRESH_COOKIE_MAX_AGE,
-    secure: COOKIES_SECURE
+    secure: COOKIES_SECURE,
   });
 }
-
-
-
-
-
-
 
 export function clearAuthCookiesOnResponse(response: NextResponse): void {
   response.cookies.set({
@@ -84,7 +50,7 @@ export function clearAuthCookiesOnResponse(response: NextResponse): void {
     sameSite: COOKIES_SAME_SITE,
     path: "/",
     maxAge: 0,
-    secure: COOKIES_SECURE
+    secure: COOKIES_SECURE,
   });
 
   response.cookies.set({
@@ -94,17 +60,7 @@ export function clearAuthCookiesOnResponse(response: NextResponse): void {
     sameSite: COOKIES_SAME_SITE,
     path: "/",
     maxAge: 0,
-    secure: COOKIES_SECURE
-  });
-
-  response.cookies.set({
-    name: USER_OBJECT_COOKIE_NAME,
-    value: "",
-    sameSite: COOKIES_SAME_SITE,
-    httpOnly: COOKIES_HTTP_ONLY,
-    path: "/",
-    maxAge: 0,
-    secure: COOKIES_SECURE
+    secure: COOKIES_SECURE,
   });
 }
 
@@ -128,23 +84,14 @@ export function isRefreshTokenPresentOnRequest(request: NextRequest): boolean {
   return request.cookies.has(REFRESH_COOKIE_NAME);
 }
 
-export function getUserObjectFromRequest(
+export function getRawCookieHeaderFromRequest(
   request: NextRequest,
-): UserObject | null {
-  const userObjStr = request.cookies.get(USER_OBJECT_COOKIE_NAME)?.value;
-
-  if (!userObjStr) return null;
-
-  try {
-    return JSON.parse(userObjStr) as UserObject;
-  } catch (err) {
-    console.error("Failed to parse user object cookie into JSON", err);
-    return null;
-  }
+): string | null {
+  return request.headers.get("cookie") ?? null;
 }
 
-// only checks the PRESENCE of user object
-// commented out because we probably don't need this function
-export function isUserObjectPresentOnRequest(request: NextRequest): boolean { 
-  return request.cookies.has(USER_OBJECT_COOKIE_NAME);
+export function getRawSetCookieHeaderFromResponse(
+  response: NextResponse,
+): string[] | null {
+  return response.headers.getSetCookie() ?? null;
 }

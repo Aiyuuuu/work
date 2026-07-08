@@ -1,4 +1,3 @@
-import type { UserObject} from "@/types/lib";
 import type { IMedia as IMediaDb, IUser as IUserDb } from "@/types/db";
 import { ErrorCode } from "@/errors/errors";
 
@@ -28,16 +27,12 @@ export type ServiceResponse<TData, TErrorCode = ErrorCode> =
   | ErrorResponse<TErrorCode>;
 
 
-
-
 export interface ILoginServiceReturnPayload {
-  userObject: UserObject;
   accessToken: string;
   refreshToken: string;
 }
 
 export interface ISignupServiceReturnPayload {
-  userObject: UserObject;
   accessToken: string;
   refreshToken: string;
 }

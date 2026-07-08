@@ -12,11 +12,5 @@ export interface SignupRequest {
   role? : UserRole
 }
 
-export interface RefreshRequest {
-  refreshToken: string;
-}
 
-export interface LogoutRequest {
-  userId: string;
-  refreshTokenId?: string;
-}
+

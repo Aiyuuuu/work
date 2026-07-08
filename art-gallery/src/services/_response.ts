@@ -34,3 +34,7 @@ export function isInternalServerError(
 export function getSuccessResponseData<T>(response: SuccessResponse<T>): T {
   return response.data;
 }
+
+export function getErrorResponseErrorCode(response: ErrorResponse<ErrorCode>): ErrorCode {
+  return response.error.code
+}

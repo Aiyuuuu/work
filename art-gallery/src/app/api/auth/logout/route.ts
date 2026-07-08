@@ -1,50 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import {
   clearAuthCookiesOnResponse,
   getAccessTokenFromRequest,
 } from "@/lib/auth/cookies";
 import { verifyAccessToken } from "@/lib/auth/signOrVerifyTokens";
-
 import { logoutService } from "@/services/auth";
-import type { LogoutRequest } from "@/types/requests";
-
-import { handleApiError } from "@/errors/api/handleErrors";
-import { AuthError } from "@/errors/services/authErrors";
+import { errorResponse, POSTSuccessResponse } from "../../_response";
+import { getErrorResponseErrorCode } from "@/services/_response";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const accessToken = getAccessTokenFromRequest(request);
 
     if (!accessToken) {
-      throw new AuthError("ACCESS_TOKEN_INVALID");
+      return NextResponse.json(...errorResponse("ACCESS_TOKEN_MISSING"));
     }
 
     const payload = await verifyAccessToken(accessToken);
 
     if (!payload) {
-      throw new AuthError("ACCESS_TOKEN_INVALID");
+      return NextResponse.json(...errorResponse("ACCESS_TOKEN_INVALID"));
     }
 
-    let refreshTokenId: string | undefined;
+    const logoutServiceResponse = await logoutService(payload.sub);
 
-    try {
-      const body = (await request.json()) as LogoutRequest;
-      refreshTokenId = body?.refreshTokenId;
-    } catch {
-      // No request body. Logout all devices.
+    if (!logoutServiceResponse.success) {
+      return NextResponse.json(
+        ...errorResponse(getErrorResponseErrorCode(logoutServiceResponse)),
+      );
     }
 
-    await logoutService(payload.sub, refreshTokenId);
-
-    const response = new NextResponse(null, {
-      status: 204,
-    });
+    const response = NextResponse.json(...POSTSuccessResponse(null));
 
     clearAuthCookiesOnResponse(response);
 
     return response;
   } catch (err) {
-    return handleApiError(err);
+    console.error("Failed to logout", err)
+      return NextResponse.json(...errorResponse("INTERNAL_SERVER_ERROR"));
+    
   }
 }

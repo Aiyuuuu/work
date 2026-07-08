@@ -1,46 +1,64 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import { getAccessTokenFromRequest } from "@/lib/auth/cookies";
 import { verifyAccessToken } from "@/lib/auth/signOrVerifyTokens";
-
 import { getPaginatedMedia } from "@/services/media";
+import {
+  errorResponse,
+  GETSuccessResponse,
+  getServiceErrorResponseErrorCode,
+  getServiceSuccessResponseData,
+} from "../_response";
 
-import { AuthError } from "@/errors/services/authErrors";
-import { handleApiError } from "@/errors/api/handleErrors";
-
-export async function GET(
-  request: NextRequest,
-): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
+    const searchParams = request.nextUrl.searchParams;
+    const startPageRaw = searchParams.get("startPage");
+    const pagesRaw = searchParams.get("pages");
+    if (!startPageRaw || !pagesRaw) {
+      return NextResponse.json(...errorResponse("BAD_REQUEST"));
+    }
+
+    const startPage = Number(startPageRaw);
+    const pages = Number(pagesRaw);
+
+    if (Number.isNaN(startPage) || Number.isNaN(pages)) {
+      return NextResponse.json(...errorResponse("BAD_REQUEST"));
+    }
+
     const accessToken = getAccessTokenFromRequest(request);
 
     if (!accessToken) {
-      throw new AuthError("ACCESS_TOKEN_INVALID");
+      return NextResponse.json(...errorResponse("ACCESS_TOKEN_MISSING"));
     }
 
     const payload = await verifyAccessToken(accessToken);
 
     if (!payload) {
-      throw new AuthError("ACCESS_TOKEN_INVALID");
+      return NextResponse.json(...errorResponse("ACCESS_TOKEN_INVALID"));
     }
 
-    const searchParams = request.nextUrl.searchParams;
+    const getPaginatedMediaServiceResult = await getPaginatedMedia(
+      startPage,
+      pages,
+    );
 
-    const startPage = Number(searchParams.get("startPage") ?? 1);
-    const pages = Number(searchParams.get("pages") ?? 1);
+    if (!getPaginatedMediaServiceResult.success) {
+      return NextResponse.json(
+        ...errorResponse(
+          getServiceErrorResponseErrorCode(getPaginatedMediaServiceResult),
+        ),
+      );
+    }
 
-    const media = await getPaginatedMedia(startPage, pages);
+    const getPaginatedMediaServiceResultData = getServiceSuccessResponseData(
+      getPaginatedMediaServiceResult,
+    );
 
     return NextResponse.json(
-      {
-        success: true,
-        data: media,
-      },
-      {
-        status: 200,
-      },
+      ...GETSuccessResponse(getPaginatedMediaServiceResultData),
     );
   } catch (err) {
-    return handleApiError(err);
+    console.log("Failed to get media", err);
+    return NextResponse.json(...errorResponse("INTERNAL_SERVER_ERROR"));
   }
 }

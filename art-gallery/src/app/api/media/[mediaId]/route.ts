@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import { getAccessTokenFromRequest } from "@/lib/auth/cookies";
 import { verifyAccessToken } from "@/lib/auth/signOrVerifyTokens";
-
 import { getMediaByMediaId } from "@/services/media";
-
-import { AuthError } from "@/errors/services/authErrors";
-import { handleApiError } from "@/errors/api/handleErrors";
+import {
+  errorResponse,
+  GETSuccessResponse,
+  getServiceErrorResponseErrorCode,
+  getServiceSuccessResponseData,
+} from "../../_response";
 
 export async function GET(
   request: NextRequest,
@@ -16,29 +17,33 @@ export async function GET(
     const accessToken = getAccessTokenFromRequest(request);
 
     if (!accessToken) {
-      throw new AuthError("ACCESS_TOKEN_INVALID");
+      return NextResponse.json(...errorResponse("ACCESS_TOKEN_MISSING"));
     }
 
     const payload = await verifyAccessToken(accessToken);
 
     if (!payload) {
-      throw new AuthError("ACCESS_TOKEN_INVALID");
+      return NextResponse.json(...errorResponse("ACCESS_TOKEN_INVALID"));
     }
 
     const { mediaId } = await params;
 
-    const media = await getMediaByMediaId(mediaId);
+    const getMediaByMediaIdServiceResult = await getMediaByMediaId(mediaId);
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: media,
-      },
-      {
-        status: 200,
-      },
-    );
+    if (!getMediaByMediaIdServiceResult.success) {
+      return NextResponse.json(
+        ...errorResponse(
+          getServiceErrorResponseErrorCode(getMediaByMediaIdServiceResult),
+        ),
+      );
+    }
+
+    const getMediaByMediaIdServiceResultData = getServiceSuccessResponseData(getMediaByMediaIdServiceResult)
+
+    return NextResponse.json(...GETSuccessResponse(getMediaByMediaIdServiceResultData))
   } catch (err) {
-    return handleApiError(err);
+    console.error("Failed to get media by mediaId", err)
+      return NextResponse.json(...errorResponse("INTERNAL_SERVER_ERROR"));
+    
   }
 }

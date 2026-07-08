@@ -1,52 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import {
   getRefreshTokenFromRequest,
-  setTokenCookiesOnResponse,
+  setAuthCookiesOnResponse,
 } from "@/lib/auth/cookies";
-
 import { refreshService } from "@/services/auth";
-import type { RefreshRequest } from "@/types/requests";
+import {
+  POSTSuccessResponse,
+  errorResponse,
+  getServiceSuccessResponseData,
+  getServiceErrorResponseErrorCode,
+} from "../../_response";
 
-import { handleApiError } from "@/errors/api/handleErrors";
-
-export async function POST(
-  request: NextRequest,
-): Promise<NextResponse> {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    // Prefer cookie, fall back to request body
-    let refreshToken = getRefreshTokenFromRequest(request);
-    console.log("Refresh token:", refreshToken);
+    const refreshToken = getRefreshTokenFromRequest(request);
 
-    if (!refreshToken) {
-      try {
-        const body = (await request.json()) as RefreshRequest;
-        refreshToken = body?.refreshToken;
-      } catch {
-        // Ignore if no JSON body
-      }
+    if(!refreshToken){
+      return NextResponse.json(...errorResponse("REFRESH_TOKEN_MISSING"))
     }
 
-    const result = await refreshService(refreshToken ?? "");
+    const refreshServiceResult = await refreshService(refreshToken);
 
-    const response = NextResponse.json(
-      {
-        success: true,
-        data: null,
-      },
-      {
-        status: 200,
-      },
-    );
+    if(!refreshServiceResult.success){
+      return NextResponse.json(...errorResponse(getServiceErrorResponseErrorCode(refreshServiceResult)))
+    }
 
-    setTokenCookiesOnResponse(
+    const refreshServiceResultData = getServiceSuccessResponseData(refreshServiceResult);
+  
+    const response = NextResponse.json(...POSTSuccessResponse(null))
+    setAuthCookiesOnResponse(
       response,
-      result.accessToken,
-      result.refreshToken,
+      refreshServiceResultData.accessToken,
+      refreshServiceResultData.refreshToken,
     );
 
     return response;
   } catch (err) {
-    return handleApiError(err);
+    console.error("Failed to refresh token", err)
+      return NextResponse.json(...errorResponse("INTERNAL_SERVER_ERROR"))
+    
   }
 }

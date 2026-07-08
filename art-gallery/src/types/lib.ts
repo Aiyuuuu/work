@@ -2,14 +2,6 @@ import type { UserRole } from "@/types/db";
 import type { JWTPayload } from "jose";
 import { isUserRole } from "@/types/db";
 
-export interface UserObject {
-  //This is the shape of the user object cookie.
-  sub: string; //user id as stored in _id in the database. sub means "subject".
-  username: string;
-  email: string;
-  role: UserRole;
-}
-
 export interface IRefreshTokenPayload extends JWTPayload {
   //used by signOrVerifyToken.
   sub: string;
