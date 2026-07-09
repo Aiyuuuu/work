@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { ICookie } from "@/types/lib";
+
 // this file does not interact with the db
 
 //import constants
@@ -68,6 +70,12 @@ export function getAccessTokenFromRequest(request: NextRequest): string | null {
   return request.cookies.get(AUTH_COOKIE_NAME)?.value ?? null;
 }
 
+export function getAccessTokenFromResponse(
+  response: NextResponse,
+): string | null {
+  return response.cookies.get(AUTH_COOKIE_NAME)?.value ?? null;
+}
+
 //only checks the PRESENCE of access token
 export function isAccessTokenPresentOnRequest(request: NextRequest): boolean {
   return request.cookies.has(AUTH_COOKIE_NAME);
@@ -84,14 +92,26 @@ export function isRefreshTokenPresentOnRequest(request: NextRequest): boolean {
   return request.cookies.has(REFRESH_COOKIE_NAME);
 }
 
+// gets the cookie headers from request. only one cookie header for all cookies
 export function getRawCookieHeaderFromRequest(
   request: NextRequest,
 ): string | null {
   return request.headers.get("cookie") ?? null;
 }
 
-export function getRawSetCookieHeaderFromResponse(
+// gets the Set-Cookie headers from response. there are multiple Set-Cookie headers for multiple set cookies.
+export function getRawSetCookieHeadersFromResponse(
   response: NextResponse,
-): string[] | null {
+): unknown[] | null {
   return response.headers.getSetCookie() ?? null;
+}
+
+export function setCookieOnRequest(
+  request: NextRequest,
+  cookie: ICookie,
+): void {
+  request.cookies.set({
+    name: cookie.name,
+    value: cookie.value
+  });
 }

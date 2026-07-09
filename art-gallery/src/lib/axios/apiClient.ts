@@ -1,3 +1,4 @@
+// src/lib/axios/apiClient.ts
 "use client";
 
 import axios, {
@@ -6,6 +7,8 @@ import axios, {
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from "axios";
+import { API_ENDPOINTS } from "@/constants/apiConstants";
+import { AUTH_ROUTE } from "@/constants/routeConstants";
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -21,7 +24,7 @@ const refreshClient = axios.create({
 });
 
 async function refreshAuthToken(): Promise<void> {
-  await refreshClient.post("/api/auth/refresh");
+  await refreshClient.post(API_ENDPOINTS.AUTH.refresh.ENDPOINT);
 }
 
 apiClient.interceptors.request.use(
@@ -36,19 +39,35 @@ apiClient.interceptors.response.use(
       _retry?: boolean;
     };
 
+    // Safely extract the custom JSON body error details inside the browser [2]
+    const responseData = error.response?.data as any;
+    const errorCode = responseData?.error?.code;
+
+    // Only trigger refresh for missing or expired access tokens
+    const isAuthTokenFailure =
+      errorCode === "ACCESS_TOKEN_MISSING" ||
+      errorCode === "ACCESS_TOKEN_INVALID";
+
+    const isRefreshRequest = originalRequest?.url?.includes(
+      API_ENDPOINTS.AUTH.refresh.ENDPOINT
+    );
+
     if (
-      error.response?.status === 401 &&
+      isAuthTokenFailure &&
       !originalRequest?._retry &&
-      originalRequest.url !== "/api/auth/refresh"
+      !isRefreshRequest
     ) {
       originalRequest._retry = true;
 
       try {
         await refreshAuthToken();
-        return apiClient(originalRequest);
-      } catch {
+        return apiClient(originalRequest); // Retry the original failed request
+      } catch (refreshErr) {
+        // If the refresh token itself is expired or revoked,
+        // force-redirect them to the login screen cleanly.
+        console.error(refreshErr)
         if (typeof window !== "undefined") {
-          window.location.href = "/auth";
+          window.location.href = AUTH_ROUTE;
         }
       }
     }

@@ -7,9 +7,11 @@ import { refreshService } from "@/services/auth";
 import {
   POSTSuccessResponse,
   errorResponse,
-  getServiceSuccessResponseData,
-  getServiceErrorResponseErrorCode,
 } from "../../_response";
+import {
+  getSuccessResponseData as getServiceSuccessResponseData,
+  getErrorResponseErrorCode as getServiceErrorResponseErrorCode,
+} from "@/services/_response";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {

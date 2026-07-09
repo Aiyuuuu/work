@@ -90,11 +90,14 @@ export function isDecodedRefreshTokenPayload(
   );
 }
 
-export interface ActiveRefreshTokenVerificationResult 
-    {
-      refreshTokenId: string;
-    }
- 
+export interface ActiveRefreshTokenVerificationResult {
+  refreshTokenId: string;
+}
 
-
-  
+// In Next.js, cookies.getAll() returns 
+// standard ResponseCookie objects where attributes: httpOnly, sameSite, path,
+// maxAge and secure are optional
+export interface ICookie { 
+  name: string;
+  value: string;
+}

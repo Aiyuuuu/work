@@ -35,13 +35,9 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
       if (!isAccessTokenVerified) {
         return NextResponse.json(...errorResponse("ACCESS_TOKEN_INVALID"));
       }
-      return NextResponse.next();
-    } else {
-      if (isAccessTokenVerified) {
-        return NextResponse.json(...errorResponse("FORBIDDEN"));
-      }
-      return NextResponse.next();
     }
+    // if not a protected route then allow all requests
+    return NextResponse.next();
   }
   //...........................................................................
 
@@ -51,8 +47,23 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   if (isRefreshTokenPresent && !isAccessTokenVerified && !isApiRouteBool) {
     const refreshResponse = await handleSilentRefresh(request);
 
-    // If the internal refresh succeeded, return the response immediately
+    // If the internal refresh succeeded, return the response immediately. Else let the below code execute.
+    // Validity of the new access token is checked by the handleSilentRefesh itself.
     if (refreshResponse) {
+      if (pathname === "/") { //redirect if root path
+        const redirectResponse = NextResponse.redirect(
+          // Construct the absolute redirect URL to /home
+          new URL(PROTECTED_ROUTES[0], request.url),
+        );
+        
+        // Copy the fresh cookies from the refreshResponse to the redirect response
+        // so the browser saves the updated access token during the redirect step.
+        const newCookies = refreshResponse.cookies.getAll();
+        for (const cookie of newCookies) {
+          redirectResponse.cookies.set(cookie);
+        }
+        return redirectResponse;
+      }
       return refreshResponse;
     }
   }

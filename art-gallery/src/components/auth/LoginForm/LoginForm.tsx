@@ -4,9 +4,10 @@ import { useState } from "react";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 
-import apiClient from "@/lib/client/axios/apiClient";
+import apiClient from "@/lib/axios/apiClient";
 
-import styles from "@/components/auth/LoginForm/LoginForm.module.css";
+import styles from "./LoginForm.module.css";
+import { API_ENDPOINTS } from "@/constants/apiConstants";
 
 export type LoginFormProps = {
   onToggle: () => void;
@@ -28,7 +29,7 @@ export default function LoginForm({ onToggle }: LoginFormProps) {
     setLoading(true);
 
     try {
-      await apiClient.post("/api/auth/login", {
+      await apiClient.post(API_ENDPOINTS.AUTH.login.ENDPOINT, {
         email: email.trim(),
         password,
       });
@@ -84,11 +85,7 @@ export default function LoginForm({ onToggle }: LoginFormProps) {
           />
         </div>
 
-        <button
-          type="submit"
-          className={styles.button}
-          disabled={loading}
-        >
+        <button type="submit" className={styles.button} disabled={loading}>
           <video
             className={styles.btnVideo}
             src="/stars_240p.mp4"

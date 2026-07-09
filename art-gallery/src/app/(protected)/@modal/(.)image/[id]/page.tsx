@@ -10,9 +10,9 @@ export default async function ImageModalPage({
   const { id } = await params;
   const media = await getMediaByMediaId(id);
 
-  if (!media) {
+  if (!media.success) {
     notFound();
   }
 
-  return <ImageModal image={media} />;
+  return <ImageModal image={media.data} />;
 }

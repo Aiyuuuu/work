@@ -1,17 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { setAuthCookiesOnResponse } from "@/lib/auth/cookies";
 import { loginService } from "@/services/auth";
+import { errorResponse, POSTSuccessResponse } from "../../_response";
+
 import {
-  getServiceSuccessResponseData,
-  errorResponse,
-  POSTSuccessResponse,
-  getServiceErrorResponseErrorCode,
-} from "../../_response";
-import type { LoginRequest } from "@/types/requests";
+  getSuccessResponseData as getServiceSuccessResponseData,
+  getErrorResponseErrorCode as getServiceErrorResponseErrorCode,
+} from "@/services/_response";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    const body = (await request.json()) as LoginRequest;
+    const body = await request.json();
 
     const loginServiceResponse = await loginService(body.email, body.password);
 

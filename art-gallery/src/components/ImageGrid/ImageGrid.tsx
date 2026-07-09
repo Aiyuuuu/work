@@ -1,19 +1,16 @@
 "use client";
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import Masonry from "@mui/lab/Masonry";
-
 import ImageCard from "../ImageCard/ImageCard";
-
 import styles from "./ImageGrid.module.css";
+import apiClient from "@/lib/axios/apiClient";
+import type { ImageCardProps } from "../ImageCard/ImageCard";
+import { API_ENDPOINTS } from "@/constants/apiConstants";
+import { MAX_REQUESTED_PAGES } from "@/constants/imageConstants";
 
-import apiClient from "@/lib/client/axios/apiClient";
-
-import type { IMedia, PaginatedMediaResult } from "@/types/services";
-
-type ImageGridProps = {
-  initialImages: IMedia[];
-};
+export interface ImageGridProps {
+  initialImages: ImageCardProps[];
+}
 
 export default function ImageGrid({ initialImages }: ImageGridProps) {
   const [images, setImages] = useState(initialImages);
@@ -32,7 +29,7 @@ export default function ImageGrid({ initialImages }: ImageGridProps) {
 
     try {
       const response = await apiClient.get(
-        `/api/media?startPage=${page}&pages=1`,
+        `${API_ENDPOINTS.MEDIA.getPaginatedMedia.ENDPOINT}?startPage=${page}&pages=${MAX_REQUESTED_PAGES}`,
       );
 
       const data = response.data.data;
@@ -41,7 +38,7 @@ export default function ImageGrid({ initialImages }: ImageGridProps) {
         const existingIds = new Set(prev.map((img) => img.id));
 
         const uniqueImages = data.items.filter(
-          (img: IMedia) => !existingIds.has(img.id),
+          (img: ImageCardProps) => !existingIds.has(img.id),
         );
 
         return [...prev, ...uniqueImages];
@@ -89,11 +86,11 @@ export default function ImageGrid({ initialImages }: ImageGridProps) {
             key={img.id}
             id={img.id}
             href={`/image/${img.id}`}
-            imageUrl={img.url}
-            blurDataUrl={img.blurDataURL!}
+            url={img.url}
+            blurDataURL={img.blurDataURL!}
             width={img.width}
             height={img.height}
-            alt={`Image ${img.externalId}`}
+            alt={`Image ${img.id}`}
           />
         ))}
       </Masonry>

@@ -1,4 +1,12 @@
 import { decode } from "blurhash";
+import { isValidWidthAndHeight } from "@/utils/validation/widthAndHeight";
+import {
+  SAFE_HEIGHT,
+  SAFE_WIDTH,
+  SAFE_DECODE_HEIGHT,
+  SAFE_DECODE_WIDTH,
+  SAFE_MAX_DECODE_DIMENSION,
+} from "@/constants/imageConstants";
 
 /**
  * Converts a blurhash to an environment-safe, Base64-encoded SVG data URL.
@@ -6,8 +14,8 @@ import { decode } from "blurhash";
  */
 export function blurHashToDataURL(
   blurHash: string,
-  width = 8, //default = 8x8
-  height = 8,
+  width: number = SAFE_WIDTH, //default = 8x8
+  height: number = SAFE_HEIGHT,
 ): string {
   try {
     if (!blurHash) {
@@ -16,17 +24,22 @@ export function blurHashToDataURL(
     }
     let decodeWidth;
     let decodeHeight;
-    if (width <= 0 || height <= 0 || width == null || height == null) {
-      decodeWidth = 8;
-      decodeHeight = 8;
+    if (!isValidWidthAndHeight(width, height)) {
+      decodeWidth = SAFE_DECODE_WIDTH;
+      decodeHeight = SAFE_DECODE_HEIGHT;
     } else {
-      const MAX = 16;
       if (width >= height) {
-        decodeWidth = MAX;
-        decodeHeight = Math.max(1, Math.round((height / width) * MAX));
+        decodeWidth = SAFE_MAX_DECODE_DIMENSION;
+        decodeHeight = Math.max(
+          1,
+          Math.round((height / width) * SAFE_MAX_DECODE_DIMENSION),
+        );
       } else {
-        decodeHeight = MAX;
-        decodeWidth = Math.max(1, Math.round((width / height) * MAX));
+        decodeHeight = SAFE_MAX_DECODE_DIMENSION;
+        decodeWidth = Math.max(
+          1,
+          Math.round((width / height) * SAFE_MAX_DECODE_DIMENSION),
+        );
       }
     }
 
@@ -70,16 +83,16 @@ export function blurHashToDataURL(
 
     // Returns the finalized, inline CSS-ready Base64 image data URL.
     return `data:image/svg+xml;base64,${base64}`;
-  } catch {
+  } catch (err) {
     // Neutral fallback SVG (gray background) so the UI doesn't crash on bad data
-    const decodeWidth = 8;
-    const decodeHeight = 8;
+    const decodeWidth = SAFE_DECODE_WIDTH;
+    const decodeHeight = SAFE_DECODE_HEIGHT;
     const fallbackSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${decodeWidth} ${decodeHeight}" preserveAspectRatio="none"><rect width="100%" height="100%" fill="#3f3f3f" /></svg>`;
     const fallbackBase64 =
       typeof window === "undefined"
         ? Buffer.from(fallbackSvg).toString("base64")
         : btoa(unescape(encodeURIComponent(fallbackSvg)));
-
+    console.error("UTILS: Failed to generate blurhash, generated default", err);
     return `data:image/svg+xml;base64,${fallbackBase64}`;
   }
 }

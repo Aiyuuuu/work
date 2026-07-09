@@ -1,11 +1,10 @@
 // components/ImageModal/ImageModal.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import styles from "./ImageModal.module.css";
-import type { IMedia } from "@/types/services";
 
 import { Black_Ops_One } from "next/font/google";
 
@@ -14,15 +13,60 @@ const blackOpsOne = Black_Ops_One({
   subsets: ["latin"],
 });
 
-type Props = {
-  image: IMedia;
-};
+// Prop types to render this component..............................
+export interface IStats {
+  cryCount: number;
+  laughCount: number;
+  likeCount: number;
+  dislikeCount: number;
+  heartCount: number;
+  commentCount: number;
+}
 
-export default function ImageModal({ image }: Props) {
+export interface IMeta {
+    prompt?: string;
+    negativePrompt?: string;
+    seed?: number;
+    sampler?: string;
+    steps?: number;
+    cfgScale?: number;
+    clipSkip?: number;
+}
+
+
+export interface ImageModalProps {
+  image: {
+  id: string;
+  blurDataURL: string;
+  externalId: number;
+  url: string;
+  hash: string;
+  baseModel: string | null;
+  browsingLevel: number;
+  width: number;
+  height: number;
+  type: "image" | "video";
+  createdAt: Date;
+  username: string;
+  stats: IStats;
+  meta: IMeta | null;
+}};
+//...............................................................
+
+export default function ImageModal({ image }: ImageModalProps) {
   const router = useRouter();
   const [videoLoaded, setVideoLoaded] = useState(false);
+   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      //Check readyState on mount for instant visual load
+      if (video.readyState >= 3) {
+        setVideoLoaded(true);
+      }
+    }
+
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         router.back();
@@ -42,6 +86,7 @@ export default function ImageModal({ image }: Props) {
     <div className={styles.backdrop} onClick={() => router.back()}>
       <video
         src="/stars_1080p_30fps.mp4"
+        ref={videoRef} 
         autoPlay
         loop
         muted
@@ -56,7 +101,7 @@ export default function ImageModal({ image }: Props) {
           ×
         </button>
 
-        <div className={styles.imageWrap}>
+        <div className={styles.imageWrap} style={{ aspectRatio: `${image.width} / ${image.height}` }}>
           <Image
             src={image.url}
             alt={`Image ${image.externalId}`}

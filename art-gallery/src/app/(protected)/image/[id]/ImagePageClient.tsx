@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
-import type { IMedia } from "@/types/services";
 
 import { Black_Ops_One } from "next/font/google";
 
@@ -13,11 +12,47 @@ const blackOpsOne = Black_Ops_One({
   subsets: ["latin"],
 });
 
-type Props = {
-  image: IMedia;
-};
+// Prop types to render this component..............................
+export interface IStats {
+  cryCount: number;
+  laughCount: number;
+  likeCount: number;
+  dislikeCount: number;
+  heartCount: number;
+  commentCount: number;
+}
 
-export default function ImagePageClient({ image }: Props) {
+export interface IMeta {
+  prompt?: string;
+  negativePrompt?: string;
+  seed?: number;
+  sampler?: string;
+  steps?: number;
+  cfgScale?: number;
+  clipSkip?: number;
+}
+
+export interface ImagePageClientProps {
+  image: {
+    id: string;
+    blurDataURL: string;
+    externalId: number;
+    url: string;
+    hash: string;
+    baseModel: string | null;
+    browsingLevel: number;
+    width: number;
+    height: number;
+    type: "image" | "video";
+    createdAt: Date;
+    username: string;
+    stats: IStats;
+    meta: IMeta | null;
+  };
+}
+//...............................................................
+
+export default function ImagePageClient({ image }: ImagePageClientProps) {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -55,7 +90,10 @@ export default function ImagePageClient({ image }: Props) {
 
       {/* Main Content Pane */}
       <div className={styles.content}>
-        <div className={styles.imageWrap}>
+        <div
+          className={styles.imageWrap}
+          style={{ aspectRatio: `${image.width} / ${image.height}` }}
+        >
           <Image
             src={image.url}
             alt={`Image ${image.externalId}`}

@@ -8,11 +8,11 @@ export default async function ImagePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const image = await getMediaByMediaId(id);
+  const media = await getMediaByMediaId(id);
 
-  if (!image) {
+  if (!media.success) {
     notFound();
   }
 
-  return <ImagePageClient image={image} />;
+  return <ImagePageClient image={media.data} />;
 }

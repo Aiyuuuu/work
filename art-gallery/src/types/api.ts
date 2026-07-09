@@ -1,4 +1,5 @@
 import { ErrorCode } from "@/errors/errors";
+import { UserRole } from "./db";
 
 /**
  * A standardized response wrapper for all api-level operations.
@@ -12,7 +13,7 @@ export type SuccessResponse<TData> = [
   },
   {
     status: number;
-  }
+  },
 ];
 
 // 2. Error Tuple [ Body, { status } ]
@@ -33,3 +34,18 @@ export type ErrorResponse<TErrorCode = ErrorCode> = [
 export type ApiResponse<TData, TErrorCode = ErrorCode> =
   | SuccessResponse<TData>
   | ErrorResponse<TErrorCode>;
+
+
+
+
+// export interface AUTHloginRequest { //not being used for now
+//   email: string;
+//   password: string;
+// }
+
+// export interface AUTHsignupRequest { //not being used for now
+//   username: string;
+//   email: string;
+//   password: string;
+//   role?: UserRole;
+// }

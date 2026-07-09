@@ -5,9 +5,11 @@ import { getMediaByMediaId } from "@/services/media";
 import {
   errorResponse,
   GETSuccessResponse,
-  getServiceErrorResponseErrorCode,
-  getServiceSuccessResponseData,
 } from "../../_response";
+import {
+  getSuccessResponseData as getServiceSuccessResponseData,
+  getErrorResponseErrorCode as getServiceErrorResponseErrorCode,
+} from "@/services/_response";
 
 export async function GET(
   request: NextRequest,

@@ -3,7 +3,6 @@
 import { ErrorCode, getDefaultMessage, getHttpStatus } from "@/errors/errors";
 import type { SuccessResponse, ErrorResponse } from "@/types/api";
 import { SUCCESS_STATUS } from "@/constants/apiConstants";
-import { getSuccessResponseData as getServiceSuccessResponseData, isInternalServerError as isServiceInternalServerError, getErrorResponseErrorCode as getServiceErrorResponseErrorCode} from "@/services/_response";
 
 export function GETSuccessResponse<T>(data: T): SuccessResponse<T> {
   return [{ success: true, data: data }, { status: SUCCESS_STATUS.GET }];
@@ -38,4 +37,12 @@ export function errorResponse(errorCode: ErrorCode): ErrorResponse<ErrorCode> {
   ];
 }
 
-export {getServiceSuccessResponseData, isServiceInternalServerError, getServiceErrorResponseErrorCode}
+// only compiles if the caller has checked 'response.success' first
+export function getSuccessResponseData<T>(response: SuccessResponse<T>): T|null {
+  return response[0]?.data ?? null;
+}
+
+export function getErrorResponseErrorCode(response: ErrorResponse<ErrorCode>): ErrorCode {
+  return response[0].error.code
+}
+

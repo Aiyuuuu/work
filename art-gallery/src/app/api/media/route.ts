@@ -5,9 +5,11 @@ import { getPaginatedMedia } from "@/services/media";
 import {
   errorResponse,
   GETSuccessResponse,
-  getServiceErrorResponseErrorCode,
-  getServiceSuccessResponseData,
 } from "../_response";
+import {
+  getSuccessResponseData as getServiceSuccessResponseData,
+  getErrorResponseErrorCode as getServiceErrorResponseErrorCode,
+} from "@/services/_response";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
@@ -58,7 +60,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       ...GETSuccessResponse(getPaginatedMediaServiceResultData),
     );
   } catch (err) {
-    console.log("Failed to get media", err);
+    console.error("Failed to get media", err);
     return NextResponse.json(...errorResponse("INTERNAL_SERVER_ERROR"));
   }
 }

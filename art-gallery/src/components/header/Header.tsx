@@ -7,7 +7,9 @@ import IconButton from "@mui/material/IconButton";
 import { FaSearch } from "react-icons/fa";
 import { Avatar } from "@mui/material";
 import { useRouter } from "next/navigation";
-import apiClient from "@/lib/client/axios/apiClient";
+import apiClient from "@/lib/axios/apiClient";
+import { API_ENDPOINTS } from "@/constants/apiConstants";
+import { SUCCESS_STATUS } from "@/constants/apiConstants";
 
 export default function Header() {
   const router = useRouter();
@@ -30,13 +32,13 @@ export default function Header() {
 
   async function handleLogout() {
     try {
-      const res = await apiClient.post("/api/auth/logout");
-      if (res.data.success) {
+      const res = await apiClient.post(API_ENDPOINTS.AUTH.logout.ENDPOINT);
+      if (res.data.success || res.data.data.success || res.status === SUCCESS_STATUS.POST || res.data.status === SUCCESS_STATUS.POST) {
         router.replace("/auth");
-        router.refresh()
+        router.refresh();
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { AUTH_ROUTES } from "@/constants/routeConstants";
+import { AUTH_ROUTE } from "@/constants/routeConstants";
 import styles from "./page.module.css";
 import Link from "next/link";
 
@@ -19,7 +19,7 @@ export default function LandingPage() {
             Discover masterpieces and find the perfect piece for your collection.
           </p>
           {/* redirect to an auth route */}
-          <Link href={AUTH_ROUTES[0]}><button className={styles.exploreBtn}>Explore Artworks</button></Link>
+          <Link href={AUTH_ROUTE}><button className={styles.exploreBtn}>Explore Artworks</button></Link>
         </div>
 
         <div className={styles.heroVisual}>

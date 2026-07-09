@@ -4,9 +4,10 @@ import { useState } from "react";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 
-import apiClient from "@/lib/client/axios/apiClient";
+import apiClient from "@/lib/axios/apiClient";
 
 import styles from "./SignupForm.module.css";
+import { API_ENDPOINTS } from "@/constants/apiConstants";
 
 export type SignupFormProps = {
   onToggle: () => void;
@@ -36,7 +37,7 @@ export default function SignupForm({ onToggle }: SignupFormProps) {
     setLoading(true);
 
     try {
-      await apiClient.post("/api/auth/signup", {
+      await apiClient.post(API_ENDPOINTS.AUTH.signup.ENDPOINT, {
         username: username.trim(),
         email: email.trim(),
         password,
@@ -121,11 +122,7 @@ export default function SignupForm({ onToggle }: SignupFormProps) {
           />
         </div>
 
-        <button
-          type="submit"
-          className={styles.button}
-          disabled={loading}
-        >
+        <button type="submit" className={styles.button} disabled={loading}>
           <video
             className={styles.btnVideo}
             src="/stars_240p.mp4"

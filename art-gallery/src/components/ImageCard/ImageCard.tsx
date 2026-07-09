@@ -1,41 +1,49 @@
-
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./ImageCard.module.css";
+import { isValidWidthAndHeight } from "@/utils/validation/widthAndHeight";
+import { SAFE_HEIGHT, SAFE_WIDTH } from "@/constants/imageConstants";
 
-export type ImageCardProps = {
+// minimum type required to render this component
+export interface ImageCardProps {
   id: string;
-  imageUrl: string;
-  blurDataUrl?: string;
-  width?: number | null;
-  height?: number | null;
+  url: string;
+  blurDataURL: string;
+  width?: number;
+  height?: number;
   href?: string;
   alt?: string;
-};
+}
 
 export default function ImageCard({
   id,
-  imageUrl,
-  blurDataUrl,
+  url,
+  blurDataURL,
   width,
   height,
   href = "#",
   alt = "image",
 }: ImageCardProps) {
-  const safeWidth = typeof width === "number" && width > 0 ? width : 800;
-  const safeHeight = typeof height === "number" && height > 0 ? height : 800;
-
+  let safeWidth;
+  let safeHeight;
+  if (width && height && isValidWidthAndHeight(width, height)) {
+    safeWidth = width;
+    safeHeight = height;
+  } else {
+    safeWidth = SAFE_WIDTH;
+    safeHeight = SAFE_HEIGHT;
+  }
   return (
     <div className={styles.card} id={id}>
       <Link href={href} className={styles.link}>
         <Image
-          src={imageUrl}
+          src={url}
           alt={alt}
           width={safeWidth}
           height={safeHeight}
           className={styles.image}
-          placeholder={blurDataUrl ? "blur" : "empty"}
-          blurDataURL={blurDataUrl}
+          placeholder={"blur"}
+          blurDataURL={blurDataURL}
         />
       </Link>
     </div>

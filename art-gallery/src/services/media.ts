@@ -8,7 +8,7 @@ import { blurHashToDataURL } from "@/utils/blurhash/blurhash";
 import type { ServiceResponse } from "@/types/services";
 import { errorResponse, successResponse } from "./_response";
 import { MAX_REQUESTED_PAGES } from "@/constants/imageConstants";
-import { isValidMongooseObjectId } from "@/utils/validation/checkValidity";
+import { isValidMongooseObjectId } from "@/utils/validation/mongooseObjectId";
 
 export async function getMediaByMediaId(
   mediaId: string,

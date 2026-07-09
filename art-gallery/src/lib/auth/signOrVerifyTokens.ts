@@ -75,8 +75,7 @@ export async function verifyAccessToken(
     }
  
     return payload;
-  } catch (err) {
-    console.error("Failed to verify access token:", err);
+  } catch {
     return null;
   }
 }
@@ -87,18 +86,15 @@ export async function verifyRefreshToken(
   try {
     const { payload } = await jwtVerify(token, JWT_REFRESH_SECRET);
 
-    console.log("Verified payload:", payload);
 
     const valid = isDecodedRefreshTokenPayload(payload);
-    console.log("Type guard:", valid);
 
     if (!valid) {
-      return null;
+      return null;1
     }
 
     return payload;
-  } catch (err) {
-    console.error("Failed to verify refresh token:", err);
+  } catch {
     return null;
   }
 }
