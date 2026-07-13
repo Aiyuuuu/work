@@ -10,3 +10,6 @@ export const SAFE_DECODE_WIDTH: number = 8; //safe blur resolutions
 export const SAFE_DECODE_HEIGHT: number = 8;
 
 export const SAFE_MAX_DECODE_DIMENSION: number = 16; //single dimension max blur resolution
+
+
+export const MAX_THUMBNAIL_RESOLUTION_WIDTH: number | null = 400 //px
