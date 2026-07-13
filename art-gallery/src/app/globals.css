@@ -10,3 +10,9 @@ body {
   /* background-color: white; */
   color: #D6D7DB;
 }
+
+
+@keyframes pulse {
+          0%, 100% { opacity: 0.9; }
+          50% { opacity: 0.45; }
+        }

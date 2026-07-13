@@ -3,6 +3,7 @@ import styles from "./home.module.css";
 import { getPaginatedMedia } from "@/services/media";
 import { getSuccessResponseData } from "@/services/_response";
 
+
 export default async function HomePage() {
   const getPaginatedMediaServiceResponse = await getPaginatedMedia(1, 1);
 

@@ -164,7 +164,7 @@ export default function ImagePageClient({ image }: ImagePageClientProps) {
             {!!image.meta?.seed && (
               <div className={styles.miniInfoBox}>
                 <div className={styles.infoBodyLabels}>Seed :</div>
-                <div className={styles.infoBodyValues}>{image.meta?.seed}</div>
+                <div className={styles.infoBodyValues}>{image.meta?.seed.toString()}</div>
               </div>
             )}
 

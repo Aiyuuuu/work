@@ -47,10 +47,24 @@ export interface IUser extends Omit<IUserDb, "_id" | "__v"> {
 }
 
 
-export interface IMedia extends Omit<IMediaDb, "_id" | "__v"> {
+export interface IMeta {
+  prompt?: string;
+  negativePrompt?: string;
+  seed?: string;    
+  sampler?: string;
+  steps?: number;
+  cfgScale?: number;
+  clipSkip?: number;
+}
+
+export interface IMedia extends Omit<IMediaDb, "_id" | "__v" | "meta" | "createdAt"> {
   id: string;
   blurDataURL: string;
+  createdAt: string;  
+  meta: IMeta | null; 
 }
+
+
 
 export interface IPaginatedMedia {
   items: IMedia[];
