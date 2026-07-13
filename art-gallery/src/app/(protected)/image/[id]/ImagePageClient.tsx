@@ -25,7 +25,7 @@ export interface IStats {
 export interface IMeta {
   prompt?: string;
   negativePrompt?: string;
-  seed?: number;
+  seed?: string;
   sampler?: string;
   steps?: number;
   cfgScale?: number;
@@ -44,7 +44,7 @@ export interface ImagePageClientProps {
     width: number;
     height: number;
     type: "image" | "video";
-    createdAt: Date;
+    createdAt: string;
     username: string;
     stats: IStats;
     meta: IMeta | null;
